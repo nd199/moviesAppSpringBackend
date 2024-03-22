@@ -1,8 +1,8 @@
 package com.naren.movieticketbookingapplication.Service;
 
 import com.naren.movieticketbookingapplication.Dao.CustomerDao;
-import com.naren.movieticketbookingapplication.Dto.CustomerDTOMapper;
 import com.naren.movieticketbookingapplication.Dto.CustomerDTO;
+import com.naren.movieticketbookingapplication.Dto.CustomerDTOMapper;
 import com.naren.movieticketbookingapplication.Entity.Customer;
 import com.naren.movieticketbookingapplication.Exception.PasswordInvalidException;
 import com.naren.movieticketbookingapplication.Exception.RequestValidationException;
@@ -19,7 +19,6 @@ import java.util.stream.Collectors;
 
 @Transactional
 @Service
-// 1. manage boundaries for methods // service methods // service encapsulate business
 public class CustomerServiceImpl implements CustomerService {
 
     private final CustomerDao customerDao;
@@ -31,23 +30,34 @@ public class CustomerServiceImpl implements CustomerService {
         this.customerDTOMapper = customerDTOMapper;
     }
 
-    private static boolean containsPersonalInfo(String password, String name, String email, String phoneNumber) {
-        String phoneNumberStr = String.valueOf(phoneNumber);
-        boolean containsName = password.contains(name);
-        boolean containsEmail = password.contains(email);
-        boolean containsPhoneNumber = password.contains(phoneNumberStr);
-        return containsName || containsEmail || containsPhoneNumber;
+    private static final int REQ_PASSWORD_LENGTH = 8;
+
+    private static boolean validatePassword(String password, String name, String email, Long phoneNumber) {
+        if (password == null) {
+            throw new PasswordInvalidException("Password is null");
+        } else if (password.length() < REQ_PASSWORD_LENGTH) {
+            System.out.println(password);
+            throw new PasswordInvalidException("Password must be at least " + REQ_PASSWORD_LENGTH + " characters long.");
+        }
+        if (containsPersonalInfo(password, name, email, phoneNumber)) {
+            throw new PasswordInvalidException("Password must not contain name, email, or phone number.");
+        }
+        return true;
     }
+
+    private static boolean containsPersonalInfo(String password, String name, String email, Long phoneNumber) {
+        return password.contains(name) || password.contains(email) || password.contains(String.valueOf(phoneNumber));
+    }
+
 
     @Override
     public void createCustomer(CustomerRegistration registration) {
 
-        if (containsPersonalInfo(registration.password(), registration.name(), registration.email(),
-                String.valueOf(registration.phoneNumber()))) {
-            throw new PasswordInvalidException(
-                    "Password must not contain name/phoneNumber or personal info"
-            );
-        } else {
+        boolean isValid = validatePassword(registration.password(), registration.name(), registration.email(), registration.phoneNumber());
+
+        if (!isValid) throw new PasswordInvalidException("Password must not contain name/phoneNumber or personal info");
+
+        else {
             if (customerDao.existsByEmail(registration.email())) {
                 throw new ResourceAlreadyExists(
                         "Email already taken"
@@ -61,6 +71,7 @@ public class CustomerServiceImpl implements CustomerService {
             customerDao.addCustomer(customer);
         }
     }
+
 
     private Customer getCustomer(CustomerRegistration registration) {
         return new Customer(

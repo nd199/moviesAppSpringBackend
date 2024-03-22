@@ -30,10 +30,10 @@ public class Customer {
     @Column(name = "name", columnDefinition = "TEXT")
     private String name;
 
-    @Column(name = "email", nullable = false)
+    @Column(name = "email", columnDefinition = "TEXT", nullable = false)
     private String email;
 
-    @Column(name = "password", nullable = false)
+    @Column(name = "password", columnDefinition = "TEXT", nullable = false, length = 8)
     private String password;
 
     @Column(name = "phone", nullable = false)

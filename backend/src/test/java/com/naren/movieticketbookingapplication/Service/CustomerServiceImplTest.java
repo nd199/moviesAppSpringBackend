@@ -1,8 +1,8 @@
 package com.naren.movieticketbookingapplication.Service;
 
 import com.naren.movieticketbookingapplication.Dao.CustomerDao;
-import com.naren.movieticketbookingapplication.Dto.CustomerDTOMapper;
 import com.naren.movieticketbookingapplication.Dto.CustomerDTO;
+import com.naren.movieticketbookingapplication.Dto.CustomerDTOMapper;
 import com.naren.movieticketbookingapplication.Entity.Customer;
 import com.naren.movieticketbookingapplication.Exception.PasswordInvalidException;
 import com.naren.movieticketbookingapplication.Exception.RequestValidationException;
@@ -29,7 +29,8 @@ class CustomerServiceImplTest {
     private final CustomerDTOMapper customerDTOMapper = new CustomerDTOMapper();
     @Mock
     private CustomerDao customerDao;
-    private CustomerService underTest;
+
+    private CustomerServiceImpl underTest;
 
     @BeforeEach
     void setUp() {
@@ -69,20 +70,51 @@ class CustomerServiceImplTest {
 
         assertThatThrownBy(() -> underTest.createCustomer(registration))
                 .isInstanceOf(PasswordInvalidException.class)
-                .hasMessage("Password must not contain name/phoneNumber or personal info");
+                .hasMessage("Password must not contain name, email, or phone number.");
+
+        verify(customerDao, never()).addCustomer(any());
+    }
+
+    @Test
+    void throwsExceptionIfPasswordInvalid() {
+
+        CustomerRegistration registration2 = new CustomerRegistration("testName", "test@example.com", "pass", 20220292232L);
+        assertThatThrownBy(() -> underTest.createCustomer(registration2))
+                .isInstanceOf(PasswordInvalidException.class)
+                .hasMessage("Password must be at least " + 8 + " characters long.");
+        verify(customerDao, never()).addCustomer(any());
+
+        CustomerRegistration registration3 = new CustomerRegistration("testName", "test@example.com", "testName123", 20220292232L);
+        assertThatThrownBy(() -> underTest.createCustomer(registration3))
+                .isInstanceOf(PasswordInvalidException.class)
+                .hasMessage("Password must not contain name, email, or phone number.");
+        verify(customerDao, never()).addCustomer(any());
     }
 
     @Test
     void throwsIfEmailAlreadyTaken() {
         String email = "test@example.com";
-
         when(customerDao.existsByEmail(email)).thenReturn(true);
+
         CustomerRegistration registration = new CustomerRegistration("testName", email, "testpassword", 20220292232L);
 
         assertThatThrownBy(() -> underTest.createCustomer(registration)).isInstanceOf(ResourceAlreadyExists.class)
                 .hasMessage("Email already taken");
 
         verify(customerDao, never()).addCustomer(any());
+    }
+
+    @Test
+    void ThrowsForInvalidPassword() {
+        String password = "";
+        String pass2 = "pass";
+        CustomerRegistration registration = new CustomerRegistration("test", "email", password, 232323282L);
+        CustomerRegistration registration2 = new CustomerRegistration("test", "email", pass2, 232323282L);
+
+        assertThatThrownBy(() -> underTest.createCustomer(registration)).isInstanceOf(PasswordInvalidException.class)
+                .hasMessage("Password must be at least " + 8 + " characters long.");
+        assertThatThrownBy(() -> underTest.createCustomer(registration2)).isInstanceOf(PasswordInvalidException.class)
+                .hasMessage("Password must be at least " + 8 + " characters long.");
     }
 
     @Test
@@ -228,7 +260,7 @@ class CustomerServiceImplTest {
     }
 
     @Test
-    void canUpdateCustomerEmail() {
+    void canUpdateOnlyCustomerEmail() {
 
         int id = 2;
 
@@ -255,7 +287,7 @@ class CustomerServiceImplTest {
 
 
     @Test
-    void throwsIfNoChangeExists() {
+    void throwsIfNoChangeExistsDuringUpdate() {
 
         int id = 2;
 
@@ -280,7 +312,7 @@ class CustomerServiceImplTest {
     }
 
     @Test
-    void deleteCustomer() {
+    void deleting_Customer() {
         int id = 1;
         Customer customer = new Customer(id, "alex", "alex@gmail.com", "password", 2233322999L);
 
@@ -292,7 +324,7 @@ class CustomerServiceImplTest {
     }
 
     @Test
-    void ThrowsWhenTryingToDeleteACustomer() {
+    void ThrowsWhenTryingToDeleteACustomer_NotExists() {
         int id = 1;
 
         when(customerDao.getCustomer(id)).thenReturn(Optional.empty());

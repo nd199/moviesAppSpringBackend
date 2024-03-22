@@ -38,7 +38,7 @@ public class movieTicketBookingApplication {
 
         var customerName = FAKER.name().name();
         var customerEmail = customerName + "@codeNaren.com";
-        var password = FAKER.internet().password();
+        var password = FAKER.internet().password(8, 12);
         Long customerPhone = Long.valueOf(FAKER.phoneNumber().subscriberNumber(9));
 
         Customer customer = new Customer(
@@ -52,8 +52,8 @@ public class movieTicketBookingApplication {
 
     private void createRandomMovie(MovieRepository movieRepository) {
         var movieName = FAKER.name().fullName();
-        var rating = RANDOM.nextDouble(5);
-        var cost = RANDOM.nextDouble(200, 400);
+        var rating = Math.floor(RANDOM.nextDouble(2, 5) * 100) / 100;
+        var cost = Math.floor(RANDOM.nextDouble(200, 1200) * 100) / 100;
 
         Movie movie = new Movie(
                 movieName,
