@@ -33,9 +33,7 @@ public class CustomerServiceImpl implements CustomerService {
     private static final int REQ_PASSWORD_LENGTH = 8;
 
     private static boolean validatePassword(String password, String name, String email, Long phoneNumber) {
-        if (password == null) {
-            throw new PasswordInvalidException("Password is null");
-        } else if (password.length() < REQ_PASSWORD_LENGTH) {
+        if (password == null || password.length() < REQ_PASSWORD_LENGTH) {
             System.out.println(password);
             throw new PasswordInvalidException("Password must be at least " + REQ_PASSWORD_LENGTH + " characters long.");
         }

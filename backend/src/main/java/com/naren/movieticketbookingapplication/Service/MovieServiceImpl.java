@@ -12,7 +12,6 @@ import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Objects;
 
 
 @Transactional
@@ -78,15 +77,15 @@ public class MovieServiceImpl implements MovieService {
 
         boolean changes = false;
 
-        if (movie.getName() != null && !Objects.equals(movie.getName(), update.name())) {
+        if (update.name() != null && !update.name().equals(movie.getName())) {
             changes = true;
             movie.setName(update.name());
         }
-        if (movie.getCost() != null && !Objects.equals(movie.getCost(), update.cost())) {
+        if (update.cost() != null && !update.cost().equals(movie.getCost())) {
             changes = true;
             movie.setCost(update.cost());
         }
-        if (movie.getRating() != null && !Objects.equals(movie.getRating(), update.rating())) {
+        if (update.rating() != null && !update.rating().equals(movie.getRating())) {
             changes = true;
             movie.setRating(update.rating());
         }

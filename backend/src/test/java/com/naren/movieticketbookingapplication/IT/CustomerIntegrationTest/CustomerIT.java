@@ -1,9 +1,10 @@
-package com.naren.movieticketbookingapplication.CustomerIntegrationTest;
+package com.naren.movieticketbookingapplication.IT.CustomerIntegrationTest;
 
 
 import com.github.javafaker.Faker;
 import com.naren.movieticketbookingapplication.Dto.CustomerDTO;
 import com.naren.movieticketbookingapplication.Record.CustomerRegistration;
+import com.naren.movieticketbookingapplication.Record.CustomerUpdateRequest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -129,5 +130,78 @@ public class CustomerIT {
                 .exchange()
                 .expectStatus()
                 .isNotFound();
+    }
+
+    @Test
+    void UpdateCustomer() {
+        var customerName = FAKER.name().name();
+        var customerEmail = customerName + "@codeNaren.com";
+        var password = FAKER.internet().password(8, 12);
+        Long customerPhone = Long.valueOf(FAKER.phoneNumber().subscriberNumber(9));
+
+        CustomerRegistration registration = new
+                CustomerRegistration(customerName, customerEmail, password, customerPhone);
+
+
+        webTestClient.post()
+                .uri(API_PATH)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(Mono.just(registration), CustomerRegistration.class)
+                .exchange()
+                .expectStatus()
+                .isOk();
+
+
+        List<CustomerDTO> customerDTOList = webTestClient.get()
+                .uri(API_PATH)
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus()
+                .isOk()
+                .expectBodyList(new ParameterizedTypeReference<CustomerDTO>() {
+                })
+                .returnResult()
+                .getResponseBody();
+
+        assert customerDTOList != null;
+        long customerId = customerDTOList.stream()
+                .filter(c -> c.email().equals(customerEmail))
+                .map(CustomerDTO::id)
+                .findFirst().orElseThrow();
+
+        String newName = "Naren";
+
+
+        CustomerUpdateRequest update = new
+                CustomerUpdateRequest(newName, customerEmail, customerPhone);
+
+
+        webTestClient.put()
+                .uri(API_PATH + "/{id}", customerId)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(Mono.just(update), CustomerUpdateRequest.class)
+                .exchange()
+                .expectStatus()
+                .isOk();
+
+
+        CustomerDTO expected = webTestClient.get()
+                .uri(API_PATH + "/{id}", customerId)
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus()
+                .isOk()
+                .expectBody(new ParameterizedTypeReference<CustomerDTO>() {
+                }).returnResult()
+                .getResponseBody();
+
+        CustomerDTO actual = new CustomerDTO(
+                (int) customerId,
+                newName, customerEmail, customerPhone
+        );
+
+        assertThat(actual).isEqualTo(expected);
     }
 }

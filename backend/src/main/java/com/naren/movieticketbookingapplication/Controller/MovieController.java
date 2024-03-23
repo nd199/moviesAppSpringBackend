@@ -47,7 +47,8 @@ public class MovieController {
     }
 
     @PutMapping("/movies/{id}")
-    public ResponseEntity<Movie> updateMovie(MovieUpdation update, @PathVariable("id") Integer movieId) {
+    public ResponseEntity<Movie> updateMovie(@RequestBody MovieUpdation update,
+                                             @PathVariable("id") Integer movieId) {
         log.info("Received request to update movie with ID: {}", movieId);
         movieService.updateMovie(update, movieId);
         log.info("Movie updated successfully");
@@ -55,10 +56,9 @@ public class MovieController {
     }
 
     @DeleteMapping("/movies/{id}")
-    public ResponseEntity<Void> deleteMovie(@PathVariable("id") Integer movieId) {
+    public void deleteMovie(@PathVariable("id") Integer movieId) {
         log.info("Received request to delete movie with ID: {}", movieId);
         movieService.removeMovie(movieId);
         log.info("Movie deleted successfully");
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
