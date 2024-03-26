@@ -9,7 +9,7 @@ class MovieTest {
 
     @Test
     void testToString() {
-        Movie movie = new Movie(1, "test", 100.99, 4.5);
+        Movie movie = new Movie(1L, "test", 100.99, 4.5);
 
         String result = movie.toString();
 
@@ -18,18 +18,18 @@ class MovieTest {
 
     @Test
     void testEquals() {
-        Movie movie1 = new Movie(1, "test", 100.99, 4.5);
-        Movie movie2 = new Movie(1, "test", 100.99, 4.5);
-        Movie movie3 = new Movie(2, "test", 120.99, 4.8);
+        Movie movie1 = new Movie(1L, "test", 100.99, 4.5);
+        Movie movie2 = new Movie(1L, "test", 100.99, 4.5);
+        Movie movie3 = new Movie(2L, "test", 120.99, 4.8);
         assertEquals(movie1, movie2);
         assertNotEquals(movie1, movie3);
     }
 
     @Test
     void testHashCode() {
-        Movie movie1 = new Movie(1, "test", 100.99, 4.5);
-        Movie movie2 = new Movie(1, "test", 100.99, 4.5);
-        Movie movie3 = new Movie(2, "test", 120.99, 4.8);
+        Movie movie1 = new Movie(1L, "test", 100.99, 4.5);
+        Movie movie2 = new Movie(1L, "test", 100.99, 4.5);
+        Movie movie3 = new Movie(2L, "test", 120.99, 4.8);
         assertEquals(movie1.hashCode(), movie2.hashCode());
         assertNotEquals(movie1.hashCode(), movie3.hashCode());
     }

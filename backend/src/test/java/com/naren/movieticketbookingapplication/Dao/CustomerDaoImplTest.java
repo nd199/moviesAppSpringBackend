@@ -28,7 +28,7 @@ class CustomerDaoImplTest extends AbstractTestContainers {
     private CustomerRepository customerRepository;
 
     private static Customer getNewCustomer() {
-        return new Customer(1, FAKER.name().name(), FAKER.internet().emailAddress(), FAKER.internet().password(), Long.valueOf(FAKER.phoneNumber().subscriberNumber(9)));
+        return new Customer(1L, FAKER.name().name(), FAKER.internet().emailAddress(), FAKER.internet().password(), Long.valueOf(FAKER.phoneNumber().subscriberNumber(9)));
     }
 
     @BeforeEach

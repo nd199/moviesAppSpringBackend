@@ -38,7 +38,7 @@ class MovieDaoImplTest {
     }
 
     private Movie getNewMovie() {
-        return new Movie(1,
+        return new Movie(1L,
                 "Harry Potter",
                 200D,
                 5D);
@@ -58,7 +58,7 @@ class MovieDaoImplTest {
     void getMovieById() {
         Movie movie = getNewMovie();
 
-        Integer id = movie.getMovie_id();
+        Long id = movie.getMovie_id();
 
         underTest.getMovieById(id);
 

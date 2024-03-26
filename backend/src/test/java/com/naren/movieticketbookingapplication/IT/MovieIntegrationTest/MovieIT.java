@@ -55,7 +55,7 @@ public class MovieIT {
                 .getResponseBody();
 
         assert movieList != null;
-        Integer id = movieList.stream()
+        Long id = movieList.stream()
                 .filter(m -> m.getName().equals(registration.name()))
                 .map(Movie::getMovie_id)
                 .findFirst()
@@ -99,7 +99,7 @@ public class MovieIT {
                 .getResponseBody();
 
         assert movieList != null;
-        Integer id = movieList.stream()
+        Long id = movieList.stream()
                 .filter(m -> m.getName().equals(registration.name()))
                 .map(Movie::getMovie_id)
                 .findFirst()
@@ -147,7 +147,7 @@ public class MovieIT {
                 .getResponseBody();
 
         assert movieList != null;
-        Integer id = movieList.stream()
+        Long id = movieList.stream()
                 .filter(m -> m.getName().equals(registration.name()))
                 .map(Movie::getMovie_id)
                 .findFirst()

@@ -19,8 +19,8 @@ class CustomerDTOMapperTest {
     @Test
     void apply() {
 
-        Customer customer = new Customer(1, "test", "test@gmail.com", "o213123rd", 23232445L);
-        CustomerDTO expected = new CustomerDTO(1, "test", "test@gmail.com", 23232445L);
+        Customer customer = new Customer(1L, "test", "test@gmail.com", "o213123rd", 23232445L);
+        CustomerDTO expected = new CustomerDTO(1L, "test", "test@gmail.com", 23232445L);
         when(customerDTOMapper.apply(customer)).thenReturn(expected);
 
         CustomerDTO actual = customerDTOMapper.apply(customer);
