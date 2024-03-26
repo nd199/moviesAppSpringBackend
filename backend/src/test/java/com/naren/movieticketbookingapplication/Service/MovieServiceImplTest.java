@@ -70,7 +70,7 @@ class MovieServiceImplTest {
 
     @Test
     void removeMovie() {
-        int id = 1;
+        long id = 1;
         Movie movie = new Movie("testName", 300.22, 5.00);
         when(movieDao.getMovieById(id)).thenReturn(Optional.of(movie));
         underTest.removeMovie(id);
@@ -79,7 +79,7 @@ class MovieServiceImplTest {
 
     @Test
     void throwsWhenMovieRemovalIfNotExist() {
-        int id = 1;
+        long id = 1;
 
         when(movieDao.getMovieById(id)).thenReturn(Optional.empty());
 
@@ -91,7 +91,7 @@ class MovieServiceImplTest {
 
     @Test
     void getMovieById() {
-        int id = 1;
+        long id = 1;
         Movie movie = new Movie("testName", 300.22, 5.00);
         when(movieDao.getMovieById(id)).thenReturn(Optional.of(movie));
         Movie actual = underTest.getMovieById(id);
@@ -101,7 +101,7 @@ class MovieServiceImplTest {
 
     @Test
     void getMovieByIdThrowsIfNotExists() {
-        int id = 1;
+        long id = 1;
 
         when(movieDao.getMovieById(id)).thenReturn(Optional.empty());
 
@@ -118,7 +118,7 @@ class MovieServiceImplTest {
 
     @Test
     void updateMovie() {
-        int id = 2;
+        long id = 2;
 
         Movie movie = new Movie(id, "testName", 200.0, 2.0);
 
@@ -142,7 +142,7 @@ class MovieServiceImplTest {
 
     @Test
     void CanUpdateOnlyMovieName() {
-        int id = 2;
+        long id = 2;
 
         Movie movie = new Movie(id, "testName", 200.0, 2.0);
 
@@ -165,7 +165,7 @@ class MovieServiceImplTest {
 
     @Test
     void canUpdateMovieRatingOnly() {
-        int id = 2;
+        long id = 2;
 
         Movie movie = new Movie(id, "testName", 200.0, 2.0);
 
@@ -189,7 +189,7 @@ class MovieServiceImplTest {
 
     @Test
     void canUpdateMovieCostOnly() {
-        int id = 2;
+        long id = 2;
 
         Movie movie = new Movie(id, "testName", 200.0, 2.0);
 
@@ -212,7 +212,7 @@ class MovieServiceImplTest {
 
     @Test
     void ThrowsIfNoChangesFoundForUpdation() {
-        int id = 2;
+        long id = 2;
 
         Movie movie = new Movie(id, "testName", 200.0, 2.0);
 
@@ -228,7 +228,7 @@ class MovieServiceImplTest {
 
     @Test
     void updateMovieByIdThrowsIfNotExists() {
-        int id = 1;
+        long id = 1;
 
         when(movieDao.getMovieById(id)).thenReturn(Optional.empty());
 

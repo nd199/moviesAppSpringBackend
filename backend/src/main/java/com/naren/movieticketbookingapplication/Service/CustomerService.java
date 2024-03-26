@@ -10,11 +10,11 @@ import java.util.List;
 public interface CustomerService {
     void createCustomer(CustomerRegistration registration);
 
-    CustomerDTO getCustomerById(Integer customerId);
+    CustomerDTO getCustomerById(Long customerId);
 
-    void updateCustomer(CustomerUpdateRequest customer, Integer customerId);
+    void updateCustomer(CustomerUpdateRequest customer, Long customerId);
 
     List<CustomerDTO> getAllCustomers();
 
-    void deleteCustomer(Integer customerId);
+    void deleteCustomer(Long customerId);
 }

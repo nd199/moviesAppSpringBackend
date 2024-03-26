@@ -32,7 +32,7 @@ public class CustomerController {
     }
 
     @GetMapping("/customers/{id}")
-    public ResponseEntity<CustomerDTO> getCustomerById(@PathVariable("id") Integer customerId) {
+    public ResponseEntity<CustomerDTO> getCustomerById(@PathVariable("id") Long customerId) {
         log.info("Fetching customer by ID: {}", customerId);
         CustomerDTO customerDTO = customerService.getCustomerById(customerId);
         log.info("Customer found: {}", customerDTO);
@@ -49,7 +49,7 @@ public class CustomerController {
 
     @PutMapping("/customers/{id}")
     public ResponseEntity<Customer> updateCustomer(@RequestBody CustomerUpdateRequest customer,
-                                                   @PathVariable("id") Integer customerId) {
+                                                   @PathVariable("id") Long customerId) {
         log.info("Updating customer with ID: {}", customerId);
         customerService.updateCustomer(customer, customerId);
         log.info("Customer updated successfully.");
@@ -57,9 +57,10 @@ public class CustomerController {
     }
 
     @DeleteMapping("/customers/{id}")
-    public void deleteCustomer(@PathVariable("id") Integer customerId) {
+    public void deleteCustomer(@PathVariable("id") Long customerId) {
         log.info("Deleting customer with ID: {}", customerId);
         customerService.deleteCustomer(customerId);
         log.info("Customer deleted successfully.");
     }
+
 }

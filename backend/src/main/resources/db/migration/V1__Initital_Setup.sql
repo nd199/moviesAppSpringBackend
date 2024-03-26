@@ -19,7 +19,7 @@ CREATE TABLE customer
     name        TEXT,
     email       VARCHAR(255) NOT NULL,
     password    VARCHAR(255) NOT NULL,
-    phone       BIGINT       NOT NULL,
+    phoneNumber       BIGINT       NOT NULL,
     CONSTRAINT pk_customer PRIMARY KEY (customer_id)
 );
 
@@ -27,4 +27,4 @@ ALTER TABLE customer
     ADD CONSTRAINT email_id_unique UNIQUE (email);
 
 ALTER TABLE customer
-    ADD CONSTRAINT phone_number_unique UNIQUE (phone);
+    ADD CONSTRAINT phone_number_unique UNIQUE (phoneNumber);

@@ -70,7 +70,7 @@ class CustomerServiceImplTest {
 
         assertThatThrownBy(() -> underTest.createCustomer(registration))
                 .isInstanceOf(PasswordInvalidException.class)
-                .hasMessage("Password must not contain name, email, or phone number.");
+                .hasMessage("Password must not contain name, email, or phone Number.");
 
         verify(customerDao, never()).addCustomer(any());
     }
@@ -87,7 +87,7 @@ class CustomerServiceImplTest {
         CustomerRegistration registration3 = new CustomerRegistration("testName", "test@example.com", "testName123", 20220292232L);
         assertThatThrownBy(() -> underTest.createCustomer(registration3))
                 .isInstanceOf(PasswordInvalidException.class)
-                .hasMessage("Password must not contain name, email, or phone number.");
+                .hasMessage("Password must not contain name, email, or phone Number.");
         verify(customerDao, never()).addCustomer(any());
     }
 
@@ -133,7 +133,7 @@ class CustomerServiceImplTest {
 
     @Test
     void getCustomerById() {
-        int id = 1;
+        long id = 1;
 
         Customer customer = new Customer(id, "Alex", "Alex@gmail.com", "password", 223123453L);
 
@@ -149,7 +149,7 @@ class CustomerServiceImplTest {
 
     @Test
     void willThrowIfCustomerWithIdNotExist() {
-        int id = 1;
+        long id = 1;
 
         when(customerDao.getCustomer(id)).thenReturn(Optional.empty());
 
@@ -160,7 +160,7 @@ class CustomerServiceImplTest {
 
     @Test
     void updateCustomer() {
-        int id = 2;
+        long id = 2;
 
         Customer customer = new Customer(id, "testName", "testEmail", "testpassword", 20220292232L);
 
@@ -180,12 +180,12 @@ class CustomerServiceImplTest {
 
         assertThat(expected.getEmail()).isEqualTo(request.email());
         assertThat(expected.getName()).isEqualTo(request.name());
-        assertThat(expected.getPhoneNumber()).isEqualTo(request.phone());
+        assertThat(expected.getPhoneNumber()).isEqualTo(request.phoneNumber());
     }
 
     @Test
     void WillThrowIfTryingToUpdateCustomerIdNotExist() {
-        int id = 2;
+        long id = 2;
 
         when(customerDao.getCustomer(id)).thenReturn(Optional.empty());
 
@@ -199,7 +199,7 @@ class CustomerServiceImplTest {
 
     @Test
     void WillThrowIfNewEmailAlreadyExistsWhileUpdating() {
-        int id = 2;
+        long id = 2;
 
         CustomerUpdateRequest updateRequest = new CustomerUpdateRequest("alex", "a@gmail.com", 20220292232L);
 
@@ -215,7 +215,7 @@ class CustomerServiceImplTest {
 
     @Test
     void canUpdateOnlyCustomerName() {
-        int id = 2;
+        long id = 2;
 
         Customer customer = new Customer(id, "testName", "testEmail", "testpassword", 20220292232L);
 
@@ -233,12 +233,12 @@ class CustomerServiceImplTest {
 
         assertThat(expected.getEmail()).isEqualTo(request.email());
         assertThat(expected.getName()).isEqualTo(request.name());
-        assertThat(expected.getPhoneNumber()).isEqualTo(request.phone());
+        assertThat(expected.getPhoneNumber()).isEqualTo(request.phoneNumber());
     }
 
     @Test
     void canUpdateOnlyCustomerPhoneNumber() {
-        int id = 2;
+        long id = 2;
 
         Customer customer = new Customer(id, "testName", "testEmail", "testpassword", 20220292232L);
 
@@ -256,13 +256,13 @@ class CustomerServiceImplTest {
 
         assertThat(expected.getEmail()).isEqualTo(request.email());
         assertThat(expected.getName()).isEqualTo(request.name());
-        assertThat(expected.getPhoneNumber()).isEqualTo(request.phone());
+        assertThat(expected.getPhoneNumber()).isEqualTo(request.phoneNumber());
     }
 
     @Test
     void canUpdateOnlyCustomerEmail() {
 
-        int id = 2;
+        long id = 2;
 
         Customer customer = new Customer(id, "testName", "testEmail", "testPassword", 20220292232L);
 
@@ -282,14 +282,14 @@ class CustomerServiceImplTest {
 
         assertThat(expected.getEmail()).isEqualTo(request.email());
         assertThat(expected.getName()).isEqualTo(request.name());
-        assertThat(expected.getPhoneNumber()).isEqualTo(request.phone());
+        assertThat(expected.getPhoneNumber()).isEqualTo(request.phoneNumber());
     }
 
 
     @Test
     void throwsIfNoChangeExistsDuringUpdate() {
 
-        int id = 2;
+        long id = 2;
 
         Customer customer = new Customer(id, "testName", "testEmail", "testPassword", 20220292232L);
 
@@ -313,7 +313,7 @@ class CustomerServiceImplTest {
 
     @Test
     void deleting_Customer() {
-        int id = 1;
+        long id = 1;
         Customer customer = new Customer(id, "alex", "alex@gmail.com", "password", 2233322999L);
 
         when(customerDao.getCustomer(id)).thenReturn(Optional.of(customer));
@@ -325,7 +325,7 @@ class CustomerServiceImplTest {
 
     @Test
     void ThrowsWhenTryingToDeleteACustomer_NotExists() {
-        int id = 1;
+        long id = 1;
 
         when(customerDao.getCustomer(id)).thenReturn(Optional.empty());
 

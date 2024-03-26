@@ -8,7 +8,7 @@ import java.util.Optional;
 public interface CustomerDao {
     void addCustomer(Customer customer);
 
-    Optional<Customer> getCustomer(Integer customerId);
+    Optional<Customer> getCustomer(Long customerId);
 
     void updateCustomer(Customer customer);
 

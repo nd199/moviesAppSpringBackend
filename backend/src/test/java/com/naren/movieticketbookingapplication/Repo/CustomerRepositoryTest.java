@@ -17,36 +17,28 @@ class CustomerRepositoryTest extends AbstractTestContainers {
     @Autowired
     private CustomerRepository underTest;
 
+
     @Test
     void existsByEmail() {
         var customerName = FAKER.name().name();
         var customerEmail = customerName + "@codeNaren.com";
-        var password = FAKER.internet().password();
-        Long customerPhone = Long.valueOf(FAKER.phoneNumber().subscriberNumber(9));
-
-        Customer customer = new Customer(customerName, customerEmail, password, customerPhone);
-
+        var password = FAKER.internet().password(8, 12);
+        Long phoneNumber = Long.valueOf(FAKER.phoneNumber().subscriberNumber(9));
+        Customer customer = new Customer(customerName, customerEmail, password, phoneNumber);
         underTest.save(customer);
-
-        var existsByEmail = underTest.existsByEmail(customerEmail);
-
-        assertThat(existsByEmail).isTrue();
+        var actual = underTest.existsByEmail(customerEmail);
+        assertThat(actual).isTrue();
     }
 
     @Test
     void existsByPhoneNumber() {
         var customerName = FAKER.name().name();
         var customerEmail = customerName + "@codeNaren.com";
-        var password = FAKER.internet().password();
-        Long customerPhone = Long.valueOf(FAKER.phoneNumber().subscriberNumber(9));
-
-        Customer customer = new Customer(customerName, customerEmail, password, customerPhone);
-
+        var password = FAKER.internet().password(8, 12);
+        Long phoneNumber = Long.valueOf(FAKER.phoneNumber().subscriberNumber(9));
+        Customer customer = new Customer(customerName, customerEmail, password, phoneNumber);
         underTest.save(customer);
-
-        var existsByPhoneNumber = underTest.existsByPhoneNumber(customerPhone);
-
-        assertThat(existsByPhoneNumber).isTrue();
+        var actual = underTest.existsByPhoneNumber(phoneNumber);
+        assertThat(actual).isTrue();
     }
-
 }

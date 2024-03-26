@@ -30,7 +30,7 @@ public class CustomerServiceImpl implements CustomerService {
         this.customerDTOMapper = customerDTOMapper;
     }
 
-    private static final int REQ_PASSWORD_LENGTH = 8;
+    private static final long REQ_PASSWORD_LENGTH = 8;
 
     private static boolean validatePassword(String password, String name, String email, Long phoneNumber) {
         if (password == null || password.length() < REQ_PASSWORD_LENGTH) {
@@ -38,7 +38,7 @@ public class CustomerServiceImpl implements CustomerService {
             throw new PasswordInvalidException("Password must be at least " + REQ_PASSWORD_LENGTH + " characters long.");
         }
         if (containsPersonalInfo(password, name, email, phoneNumber)) {
-            throw new PasswordInvalidException("Password must not contain name, email, or phone number.");
+            throw new PasswordInvalidException("Password must not contain name, email, or phone Number.");
         }
         return true;
     }
@@ -81,7 +81,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public CustomerDTO getCustomerById(Integer customerId) {
+    public CustomerDTO getCustomerById(Long customerId) {
         return customerDao.getCustomer(customerId).map(customerDTOMapper).
                 orElseThrow(() -> new ResourceNotFoundException(
                         "customer with id [%s] not found".formatted(customerId)
@@ -90,7 +90,7 @@ public class CustomerServiceImpl implements CustomerService {
 
 
     @Override
-    public void updateCustomer(CustomerUpdateRequest request, Integer id) {
+    public void updateCustomer(CustomerUpdateRequest request, Long id) {
 
         Customer customer = customerDao.getCustomer(id).orElseThrow(
                 () -> new ResourceNotFoundException(
@@ -113,8 +113,8 @@ public class CustomerServiceImpl implements CustomerService {
             customer.setEmail(request.email());
             changes = true;
         }
-        if (request.phone() != null && !request.phone().equals(customer.getPhoneNumber())) {
-            customer.setPhoneNumber(request.phone());
+        if (request.phoneNumber() != null && !String.valueOf(request.phoneNumber()).equals(String.valueOf(customer.getPhoneNumber()))) {
+            customer.setPhoneNumber(request.phoneNumber());
             changes = true;
         }
 
@@ -135,7 +135,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public void deleteCustomer(Integer customerId) {
+    public void deleteCustomer(Long customerId) {
         Customer customer = customerDao.getCustomer(customerId).orElseThrow(
                 () -> new ResourceNotFoundException(
                         "customer with id [%s] not found".formatted(customerId)
@@ -143,4 +143,8 @@ public class CustomerServiceImpl implements CustomerService {
         );
         customerDao.deleteCustomer(customer);
     }
+//
+//    public void rentAMovie(Long customerId, Long movieId){
+//      d
+//    }
 }

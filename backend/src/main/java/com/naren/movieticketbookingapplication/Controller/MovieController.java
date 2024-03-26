@@ -31,7 +31,7 @@ public class MovieController {
     }
 
     @GetMapping("/movies/{id}")
-    public ResponseEntity<Movie> getMovieById(@PathVariable("id") Integer movieId) {
+    public ResponseEntity<Movie> getMovieById(@PathVariable("id") Long movieId) {
         log.info("Received request to retrieve movie with ID: {}", movieId);
         Movie movie = movieService.getMovieById(movieId);
         log.info("Retrieved movie: {}", movie);
@@ -48,7 +48,7 @@ public class MovieController {
 
     @PutMapping("/movies/{id}")
     public ResponseEntity<Movie> updateMovie(@RequestBody MovieUpdation update,
-                                             @PathVariable("id") Integer movieId) {
+                                             @PathVariable("id") Long movieId) {
         log.info("Received request to update movie with ID: {}", movieId);
         movieService.updateMovie(update, movieId);
         log.info("Movie updated successfully");
@@ -56,9 +56,10 @@ public class MovieController {
     }
 
     @DeleteMapping("/movies/{id}")
-    public void deleteMovie(@PathVariable("id") Integer movieId) {
+    public void deleteMovie(@PathVariable("id") Long movieId) {
         log.info("Received request to delete movie with ID: {}", movieId);
         movieService.removeMovie(movieId);
         log.info("Movie deleted successfully");
     }
+
 }

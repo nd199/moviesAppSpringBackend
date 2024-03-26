@@ -13,7 +13,7 @@ import java.util.Objects;
         @UniqueConstraint(name = "email_id_unique",
                 columnNames = "email"),
         @UniqueConstraint(name = "phone_number_unique",
-                columnNames = "phone")
+                columnNames = "phoneNumber")
 })
 @Getter
 @Setter
@@ -25,7 +25,7 @@ public class Customer {
             allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE,
             generator = "customer_id")
-    private Integer customer_id;
+    private Long customer_id;
 
     @Column(name = "name", columnDefinition = "TEXT")
     private String name;
@@ -36,10 +36,10 @@ public class Customer {
     @Column(name = "password", columnDefinition = "TEXT", nullable = false, length = 8)
     private String password;
 
-    @Column(name = "phone", nullable = false)
+    @Column(name = "phoneNumber", nullable = false)
     private Long phoneNumber;
 
-    public Customer(Integer customer_id, String name, String email, String password, Long phoneNumber) {
+    public Customer(Long customer_id, String name, String email, String password, Long phoneNumber) {
         this.customer_id = customer_id;
         this.name = name;
         this.email = email;

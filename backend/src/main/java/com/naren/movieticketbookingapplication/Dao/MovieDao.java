@@ -10,7 +10,7 @@ public interface MovieDao {
 
     void removeMovie(Movie movie);
 
-    Optional<Movie> getMovieById(Integer id);
+    Optional<Movie> getMovieById(Long id);
 
     void updateMovie(Movie update);
 

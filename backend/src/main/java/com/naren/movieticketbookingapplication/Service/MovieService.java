@@ -10,11 +10,11 @@ import java.util.List;
 public interface MovieService {
     void addMovie(MovieRegistration Registration);
 
-    void removeMovie(Integer id);
+    void removeMovie(Long id);
 
-    Movie getMovieById(Integer id);
+    Movie getMovieById(Long id);
 
     List<Movie> getMovieList();
 
-    void updateMovie(MovieUpdation update, Integer movieId);
+    void updateMovie(MovieUpdation update, Long movieId);
 }

@@ -23,7 +23,7 @@ public class Movie {
     @SequenceGenerator(name = "movie_id",
             sequenceName = "movie_id",
             allocationSize = 1)
-    private Integer movie_id;
+    private Long movie_id;
 
     @Column(name = "name", nullable = false, columnDefinition = "TEXT")
     private String name;
@@ -34,7 +34,7 @@ public class Movie {
     @Column(name = "rating", nullable = false)
     private Double rating;
 
-    public Movie(Integer movie_id, String name, Double cost, Double rating) {
+    public Movie(Long movie_id, String name, Double cost, Double rating) {
         this.movie_id = movie_id;
         this.name = name;
         this.cost = cost;

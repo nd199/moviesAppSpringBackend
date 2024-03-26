@@ -30,7 +30,7 @@ public class MovieIT {
     @Test
     void createMovie() {
 
-        var movieName = FAKER.funnyName().name();
+        var movieName = FAKER.name().fullName();
         var rating = Math.floor(RANDOM.nextDouble(2, 5) * 100) / 100;
         var cost = Math.floor(RANDOM.nextDouble(200, 1200) * 100) / 100;
 
@@ -75,7 +75,7 @@ public class MovieIT {
 
     @Test
     void deleteMovie() {
-        var movieName = FAKER.funnyName().name();
+        var movieName = FAKER.name().fullName();
         var rating = Math.floor(RANDOM.nextDouble(2, 5) * 100) / 100;
         var cost = Math.floor(RANDOM.nextDouble(200, 1200) * 100) / 100;
         MovieRegistration registration = new MovieRegistration(movieName, cost, rating);
@@ -122,7 +122,7 @@ public class MovieIT {
 
     @Test
     void updateMovie() {
-        var movieName = FAKER.funnyName().name();
+        var movieName = FAKER.name().fullName();
         var rating = Math.floor(RANDOM.nextDouble(2, 5) * 100) / 100;
         var cost = Math.floor(RANDOM.nextDouble(200, 1200) * 100) / 100;
 

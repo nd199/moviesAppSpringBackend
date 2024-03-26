@@ -42,7 +42,7 @@ public class MovieServiceImpl implements MovieService {
     }
 
     @Override
-    public void removeMovie(Integer id) {
+    public void removeMovie(Long id) {
         Movie movie = movieDao.getMovieById(id)
                 .orElseThrow(
                         () -> new ResourceNotFoundException(
@@ -53,7 +53,7 @@ public class MovieServiceImpl implements MovieService {
     }
 
     @Override
-    public Movie getMovieById(Integer id) {
+    public Movie getMovieById(Long id) {
         return movieDao.getMovieById(id)
                 .orElseThrow(
                         () -> new ResourceNotFoundException(
@@ -68,7 +68,7 @@ public class MovieServiceImpl implements MovieService {
     }
 
     @Override
-    public void updateMovie(MovieUpdation update, Integer movieId) {
+    public void updateMovie(MovieUpdation update, Long movieId) {
         Movie movie = movieDao.getMovieById(movieId).orElseThrow(
                 () -> new ResourceNotFoundException(
                         "Movie not found"

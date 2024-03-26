@@ -39,13 +39,13 @@ public class movieTicketBookingApplication {
         var customerName = FAKER.name().name();
         var customerEmail = customerName + "@codeNaren.com";
         var password = FAKER.internet().password(8, 12);
-        Long customerPhone = Long.valueOf(FAKER.phoneNumber().subscriberNumber(9));
+        Long phoneNumber = Long.valueOf(FAKER.phoneNumber().subscriberNumber(9));
 
         Customer customer = new Customer(
                 customerName,
                 customerEmail,
                 password,
-                customerPhone
+                phoneNumber
         );
         customerRepository.save(customer);
     }

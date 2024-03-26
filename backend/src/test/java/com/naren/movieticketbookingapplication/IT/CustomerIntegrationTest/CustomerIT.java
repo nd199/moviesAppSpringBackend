@@ -198,7 +198,7 @@ public class CustomerIT {
                 .getResponseBody();
 
         CustomerDTO actual = new CustomerDTO(
-                (int) customerId,
+                (long) customerId,
                 newName, customerEmail, customerPhone
         );
 
