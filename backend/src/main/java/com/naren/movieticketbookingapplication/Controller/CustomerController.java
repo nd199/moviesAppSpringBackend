@@ -5,7 +5,9 @@ import com.naren.movieticketbookingapplication.Entity.Customer;
 import com.naren.movieticketbookingapplication.Record.CustomerRegistration;
 import com.naren.movieticketbookingapplication.Record.CustomerUpdateRequest;
 import com.naren.movieticketbookingapplication.Service.CustomerService;
+import com.naren.movieticketbookingapplication.jwt.JWTUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,17 +20,24 @@ import java.util.List;
 public class CustomerController {
 
     private final CustomerService customerService;
+    private final JWTUtil jwtUtil;
 
-    public CustomerController(CustomerService customerService) {
+    public CustomerController(CustomerService customerService, JWTUtil jwtUtil) {
         this.customerService = customerService;
+        this.jwtUtil = jwtUtil;
     }
 
     @PostMapping("/customers")
-    public ResponseEntity<Customer> createCustomer(@RequestBody CustomerRegistration registration) {
+    public ResponseEntity<?> createCustomer(@RequestBody CustomerRegistration registration) {
         log.info("Creating customer...");
         customerService.createCustomer(registration);
-        log.info("Customer created successfully.");
-        return new ResponseEntity<>(HttpStatus.OK);
+        String token = jwtUtil.issueToken(registration.email(), "ROLE_USER");
+        log.info("Token Created.");
+        log.info("Token Sent SuccessFul.");
+        return ResponseEntity.ok()
+                .header(HttpHeaders.AUTHORIZATION, token)
+                .build();
+
     }
 
     @GetMapping("/customers/{id}")

@@ -15,14 +15,6 @@
     <name>movieticketbookingapplication</name>
     <description>movieticketbookingapplication</description>
 
-    <properties>
-        <java.version>17</java.version>
-        <docker.username>codenaren23</docker.username>
-        <docker.image.name>movieticket-api</docker.image.name>
-        <docker.image.tag/>
-    </properties>
-
-
     <dependencies>
         <!--        starters-->
         <dependency>
@@ -73,6 +65,34 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- security -->
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-test</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-api</artifactId>
+            <version>0.12.5</version>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-impl</artifactId>
+            <version>0.12.5</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-jackson</artifactId>
+            <version>0.12.5</version>
+            <scope>runtime</scope>
+        </dependency>
 
         <!--        database-->
         <dependency>
@@ -175,7 +195,15 @@
             <plugin>
                 <groupId>com.google.cloud.tools</groupId>
                 <artifactId>jib-maven-plugin</artifactId>
-                <version>3.3.1</version>
+                <version>3.3.2</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>build</goal>
+                        </goals>
+                    </execution>
+                </executions>
                 <configuration>
                     <from>
                         <image>eclipse-temurin:17</image>
@@ -191,7 +219,9 @@
                         </platforms>
                     </from>
                     <to>
-                        <image>docker.io/${docker.username}/${docker.image.name}:${docker.image.tag}</image>
+                        <image>
+                            docker.io/codenaren23/movieticket-api
+                        </image>
                         <tags>
                             <tag>latest</tag>
                         </tags>
@@ -202,3 +232,5 @@
     </build>
 
 </project>
+
+
