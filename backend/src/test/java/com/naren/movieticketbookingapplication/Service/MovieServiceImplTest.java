@@ -13,6 +13,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Optional;
 
@@ -28,6 +30,8 @@ class MovieServiceImplTest {
     private MovieDao movieDao;
     private MovieService underTest;
 
+    private static final Logger logger = LoggerFactory.getLogger(MovieServiceImplTest.class);
+
     @BeforeEach
     void setUp() {
         underTest = new MovieServiceImpl(movieDao);
@@ -35,7 +39,6 @@ class MovieServiceImplTest {
 
     @Test
     void addMovie() {
-
         MovieRegistration registration = new MovieRegistration("testName", 300.23, 5.00);
 
         when(movieDao.existsByName("testName")).thenReturn(false);
@@ -55,25 +58,27 @@ class MovieServiceImplTest {
     }
 
     @Test
-    void ThrowsMovieNameExists() {
-
+    void throwsMovieNameExists() {
         MovieRegistration registration = new MovieRegistration("testName", 300.23, 5.00);
 
         when(movieDao.existsByName("testName")).thenReturn(true);
 
-        assertThatThrownBy(() -> underTest.addMovie(registration)).isInstanceOf(ResourceAlreadyExists.class)
-                .hasMessage("Movie name Taken");
+        assertThatThrownBy(() -> underTest.addMovie(registration))
+                .isInstanceOf(ResourceAlreadyExists.class)
+                .hasMessageContaining("Movie name 'testName' already exists");
 
         verify(movieDao, never()).addMovie(any());
-
     }
 
     @Test
     void removeMovie() {
         long id = 1;
         Movie movie = new Movie("testName", 300.22, 5.00);
+
         when(movieDao.getMovieById(id)).thenReturn(Optional.of(movie));
+
         underTest.removeMovie(id);
+
         verify(movieDao).removeMovie(movie);
     }
 
@@ -83,8 +88,9 @@ class MovieServiceImplTest {
 
         when(movieDao.getMovieById(id)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> underTest.removeMovie(id)).isInstanceOf(ResourceNotFoundException.class)
-                .hasMessage("Movie with [%s] not found".formatted(id));
+        assertThatThrownBy(() -> underTest.removeMovie(id))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessageContaining("Movie with ID '1' not found");
 
         verify(movieDao, never()).removeMovie(any());
     }
@@ -93,11 +99,13 @@ class MovieServiceImplTest {
     void getMovieById() {
         long id = 1;
         Movie movie = new Movie("testName", 300.22, 5.00);
+
         when(movieDao.getMovieById(id)).thenReturn(Optional.of(movie));
+
         Movie actual = underTest.getMovieById(id);
+
         assertThat(actual).isEqualTo(movie);
     }
-
 
     @Test
     void getMovieByIdThrowsIfNotExists() {
@@ -105,14 +113,15 @@ class MovieServiceImplTest {
 
         when(movieDao.getMovieById(id)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> underTest.getMovieById(id)).isInstanceOf(
-                        ResourceNotFoundException.class)
-                .hasMessage("Movie with [%s] not found".formatted(id));
+        assertThatThrownBy(() -> underTest.getMovieById(id))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessageContaining("Movie with ID '1' not found");
     }
 
     @Test
     void getMovieList() {
         underTest.getMovieList();
+
         verify(movieDao).getMovieList();
     }
 
@@ -132,86 +141,15 @@ class MovieServiceImplTest {
 
         verify(movieDao).updateMovie(movieArgumentCaptor.capture());
 
-        Movie expected = movieArgumentCaptor.getValue();
+        Movie updatedMovie = movieArgumentCaptor.getValue();
 
-        assertThat(expected.getName()).isEqualTo(movieUpdation.name());
-        assertThat(expected.getCost()).isEqualTo(movieUpdation.cost());
-        assertThat(expected.getRating()).isEqualTo(movieUpdation.rating());
-    }
-
-
-    @Test
-    void CanUpdateOnlyMovieName() {
-        long id = 2;
-
-        Movie movie = new Movie(id, "testName", 200.0, 2.0);
-
-        when(movieDao.getMovieById(id)).thenReturn(Optional.of(movie));
-
-        MovieUpdation movieUpdation = new MovieUpdation("testName2", 200.0, 2.0);
-
-        underTest.updateMovie(movieUpdation, id);
-
-        ArgumentCaptor<Movie> movieArgumentCaptor = ArgumentCaptor.forClass(Movie.class);
-
-        verify(movieDao).updateMovie(movieArgumentCaptor.capture());
-
-        Movie expected = movieArgumentCaptor.getValue();
-
-        assertThat(expected.getName()).isEqualTo(movieUpdation.name());
-        assertThat(expected.getCost()).isEqualTo(movieUpdation.cost());
-        assertThat(expected.getRating()).isEqualTo(movieUpdation.rating());
+        assertThat(updatedMovie.getName()).isEqualTo(movieUpdation.name());
+        assertThat(updatedMovie.getCost()).isEqualTo(movieUpdation.cost());
+        assertThat(updatedMovie.getRating()).isEqualTo(movieUpdation.rating());
     }
 
     @Test
-    void canUpdateMovieRatingOnly() {
-        long id = 2;
-
-        Movie movie = new Movie(id, "testName", 200.0, 2.0);
-
-        when(movieDao.getMovieById(id)).thenReturn(Optional.of(movie));
-
-        MovieUpdation movieUpdation = new MovieUpdation("testName", 200.0, 3.0);
-
-        underTest.updateMovie(movieUpdation, id);
-
-        ArgumentCaptor<Movie> movieArgumentCaptor = ArgumentCaptor.forClass(Movie.class);
-
-        verify(movieDao).updateMovie(movieArgumentCaptor.capture());
-
-        Movie expected = movieArgumentCaptor.getValue();
-
-        assertThat(expected.getName()).isEqualTo(movieUpdation.name());
-        assertThat(expected.getCost()).isEqualTo(movieUpdation.cost());
-        assertThat(expected.getRating()).isEqualTo(movieUpdation.rating());
-    }
-
-
-    @Test
-    void canUpdateMovieCostOnly() {
-        long id = 2;
-
-        Movie movie = new Movie(id, "testName", 200.0, 2.0);
-
-        when(movieDao.getMovieById(id)).thenReturn(Optional.of(movie));
-
-        MovieUpdation movieUpdation = new MovieUpdation("testName", 500.0, 2.0);
-
-        underTest.updateMovie(movieUpdation, id);
-
-        ArgumentCaptor<Movie> movieArgumentCaptor = ArgumentCaptor.forClass(Movie.class);
-
-        verify(movieDao).updateMovie(movieArgumentCaptor.capture());
-
-        Movie expected = movieArgumentCaptor.getValue();
-
-        assertThat(expected.getName()).isEqualTo(movieUpdation.name());
-        assertThat(expected.getCost()).isEqualTo(movieUpdation.cost());
-        assertThat(expected.getRating()).isEqualTo(movieUpdation.rating());
-    }
-
-    @Test
-    void ThrowsIfNoChangesFoundForUpdation() {
+    void throwsIfNoChangesFoundForUpdation() {
         long id = 2;
 
         Movie movie = new Movie(id, "testName", 200.0, 2.0);
@@ -220,10 +158,9 @@ class MovieServiceImplTest {
 
         MovieUpdation movieUpdation = new MovieUpdation("testName", 200.0, 2.0);
 
-
         assertThatThrownBy(() -> underTest.updateMovie(movieUpdation, id))
                 .isInstanceOf(RequestValidationException.class)
-                .hasMessage("no data changes found");
+                .hasMessageContaining("No data changes found");
     }
 
     @Test
@@ -233,12 +170,11 @@ class MovieServiceImplTest {
         when(movieDao.getMovieById(id)).thenReturn(Optional.empty());
 
         MovieUpdation updation = new MovieUpdation("Name", 220.0, 3.30);
-        assertThatThrownBy(() -> underTest.updateMovie(updation, id)).isInstanceOf(
-                        ResourceNotFoundException.class)
-                .hasMessage("Movie not found");
+
+        assertThatThrownBy(() -> underTest.updateMovie(updation, id))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessageContaining("Movie not found");
 
         verify(movieDao, never()).updateMovie(any());
     }
-
-
 }

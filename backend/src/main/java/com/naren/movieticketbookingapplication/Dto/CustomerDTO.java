@@ -1,9 +1,13 @@
 package com.naren.movieticketbookingapplication.Dto;
 
+import java.util.List;
+
 public record CustomerDTO(
         Long id,
         String name,
         String email,
-        Long phoneNumber
+        List<String> roles,
+        Long phoneNumber,
+        String userName
 ) {
 }

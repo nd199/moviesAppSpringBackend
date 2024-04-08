@@ -2,10 +2,10 @@ package com.naren.movieticketbookingapplication.Controller;
 
 import com.naren.movieticketbookingapplication.Dto.CustomerDTO;
 import com.naren.movieticketbookingapplication.Entity.Customer;
+import com.naren.movieticketbookingapplication.JWT.JwtUtil;
 import com.naren.movieticketbookingapplication.Record.CustomerRegistration;
 import com.naren.movieticketbookingapplication.Record.CustomerUpdateRequest;
 import com.naren.movieticketbookingapplication.Service.CustomerService;
-import com.naren.movieticketbookingapplication.jwt.JWTUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -20,9 +20,9 @@ import java.util.List;
 public class CustomerController {
 
     private final CustomerService customerService;
-    private final JWTUtil jwtUtil;
+    private final JwtUtil jwtUtil;
 
-    public CustomerController(CustomerService customerService, JWTUtil jwtUtil) {
+    public CustomerController(CustomerService customerService, JwtUtil jwtUtil) {
         this.customerService = customerService;
         this.jwtUtil = jwtUtil;
     }
@@ -37,7 +37,6 @@ public class CustomerController {
         return ResponseEntity.ok()
                 .header(HttpHeaders.AUTHORIZATION, token)
                 .build();
-
     }
 
     @GetMapping("/customers/{id}")

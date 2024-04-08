@@ -10,7 +10,7 @@ class movieTicketBookingApplicationTest {
         String[] args = {};
 
         Assertions.assertDoesNotThrow(
-                () -> movieTicketBookingApplication.main(args)
+                () -> MovieTicketBookingApplication.main(args)
         );
     }
 }
