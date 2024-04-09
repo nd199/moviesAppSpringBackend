@@ -33,7 +33,7 @@ public class CustomerController {
         customerService.createCustomer(registration);
         String token = jwtUtil.issueToken(registration.email(), "ROLE_USER");
         log.info("Token Created.");
-        log.info("Token Sent SuccessFul.");
+        log.info("Token Sent Successfully.");
         return ResponseEntity.ok()
                 .header(HttpHeaders.AUTHORIZATION, token)
                 .build();
@@ -71,4 +71,17 @@ public class CustomerController {
         log.info("Customer deleted successfully.");
     }
 
+    @PutMapping("/customers/add-movie/{customerId}/{movieId}")
+    public void addMovieToCustomer(@PathVariable Long customerId, @PathVariable Long movieId) {
+        log.info("Adding movie with ID {} to customer with ID: {}", movieId, customerId);
+        customerService.addMovieToCustomer(customerId, movieId);
+        log.info("Movie with ID {} added to customer with ID: {}", movieId, customerId);
+    }
+
+    @PutMapping("/customers/remove-movie/{customerId}/{movieId}")
+    public void removeMovieFromCustomer(@PathVariable Long customerId, @PathVariable Long movieId) {
+        log.info("Removing movie with ID {} from customer with ID: {}", movieId, customerId);
+        customerService.removeMovieFromCustomer(customerId, movieId);
+        log.info("Movie with ID {} removed from customer with ID: {}", movieId, customerId);
+    }
 }

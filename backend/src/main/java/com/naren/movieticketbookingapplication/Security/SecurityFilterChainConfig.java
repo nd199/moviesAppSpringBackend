@@ -35,7 +35,14 @@ public class SecurityFilterChainConfig {
         httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth ->
-                        auth.requestMatchers(HttpMethod.POST, "/api/v1/customers").permitAll()
+                        auth
+                                .requestMatchers(HttpMethod.POST, "/api/v1/customers", "/api/v1/movies").permitAll()
+                                // Permit all GET requests to "/api/v1/movies/{id}"
+                                .requestMatchers(HttpMethod.GET, "/api/v1/movies", "api/v1/movies/{id}").permitAll()
+                                // Permit all PUT and DELETE requests to "/api/v1/movies/{id}"
+                                .requestMatchers(HttpMethod.PUT, "/api/v1/movies/{id}").permitAll()
+                                .requestMatchers(HttpMethod.DELETE, "/api/v1/movies/{id}").permitAll()
+                                // Require authentication for any other requests
                                 .anyRequest().authenticated()
                 )
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

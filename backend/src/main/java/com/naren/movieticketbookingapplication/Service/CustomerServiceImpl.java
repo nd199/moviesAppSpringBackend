@@ -1,13 +1,12 @@
 package com.naren.movieticketbookingapplication.Service;
 
 import com.naren.movieticketbookingapplication.Dao.CustomerDao;
+import com.naren.movieticketbookingapplication.Dao.MovieDao;
 import com.naren.movieticketbookingapplication.Dto.CustomerDTO;
 import com.naren.movieticketbookingapplication.Dto.CustomerDTOMapper;
 import com.naren.movieticketbookingapplication.Entity.Customer;
-import com.naren.movieticketbookingapplication.Exception.PasswordInvalidException;
-import com.naren.movieticketbookingapplication.Exception.RequestValidationException;
-import com.naren.movieticketbookingapplication.Exception.ResourceAlreadyExists;
-import com.naren.movieticketbookingapplication.Exception.ResourceNotFoundException;
+import com.naren.movieticketbookingapplication.Entity.Movie;
+import com.naren.movieticketbookingapplication.Exception.*;
 import com.naren.movieticketbookingapplication.Record.CustomerRegistration;
 import com.naren.movieticketbookingapplication.Record.CustomerUpdateRequest;
 import jakarta.transaction.Transactional;
@@ -16,7 +15,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Transactional
@@ -26,11 +24,13 @@ public class CustomerServiceImpl implements CustomerService {
     private final CustomerDao customerDao;
     private final PasswordEncoder passwordEncoder;
     private final CustomerDTOMapper customerDTOMapper;
+    private final MovieDao movieDao;
 
-    public CustomerServiceImpl(CustomerDao customerDao, PasswordEncoder passwordEncoder, CustomerDTOMapper customerDTOMapper) {
+    public CustomerServiceImpl(CustomerDao customerDao, PasswordEncoder passwordEncoder, CustomerDTOMapper customerDTOMapper, MovieDao movieDao) {
         this.customerDao = customerDao;
         this.passwordEncoder = passwordEncoder;
         this.customerDTOMapper = customerDTOMapper;
+        this.movieDao = movieDao;
     }
 
     private static final long REQ_PASSWORD_LENGTH = 8;
@@ -121,16 +121,21 @@ public class CustomerServiceImpl implements CustomerService {
         }
 
         customerDao.updateCustomer(customer);
+
+        log.info("Customer updated successfully: {}", customer);
     }
 
     @Override
     public List<CustomerDTO> getAllCustomers() {
         log.info("Fetching all customers");
 
-        return customerDao.getCustomerList()
+        List<CustomerDTO> customers = customerDao.getCustomerList()
                 .stream()
                 .map(customerDTOMapper)
-                .collect(Collectors.toList());
+                .toList();
+        log.info("Retrieved {} customers", customers.size());
+
+        return customers;
     }
 
     @Override
@@ -141,5 +146,43 @@ public class CustomerServiceImpl implements CustomerService {
                 .orElseThrow(() -> new ResourceNotFoundException("Customer with ID " + customerId + " not found"));
 
         customerDao.deleteCustomer(customer);
+        log.info("Customer deleted successfully: {}", customer);
+    }
+
+    @Override
+    public void addMovieToCustomer(Long customerId, Long movieId) {
+        log.info("Adding movie with ID {} to customer with ID {}", movieId, customerId);
+
+        Customer customer = customerDao.getCustomer(customerId)
+                .orElseThrow(() -> new ResourceNotFoundException("Customer with ID " + customerId + " not found"));
+        Movie movie = movieDao.getMovieById(movieId)
+                .orElseThrow(() -> new ResourceNotFoundException("Movie with ID " + movieId + " not found"));
+
+        if (customer.getMovies().contains(movie)) {
+            throw new Customer_MovieAlreadyExistsException(
+                    "Customer %s already subscribed to %s movie".formatted(customer, movie));
+        }
+        customer.addMovie(movie);
+        customerDao.updateCustomer(customer);
+
+        log.info("Movie added to customer successfully: Customer={}, Movie={}", customer.getName(), movie.getName());
+    }
+
+    @Override
+    public void removeMovieFromCustomer(Long customerId, Long movieId) {
+        log.info("Removing movie with ID {} from customer with ID {}", movieId, customerId);
+
+        Customer customer = customerDao.getCustomer(customerId)
+                .orElseThrow(() -> new ResourceNotFoundException("Customer with ID " + customerId + " not found"));
+        Movie movie = movieDao.getMovieById(movieId)
+                .orElseThrow(() -> new ResourceNotFoundException("Movie with ID " + movieId + " not found"));
+
+        if (!customer.getMovies().contains(movie)) {
+            throw new Customer_MovieNotFound(
+                    "Customer %s not subscribed to %s movie".formatted(customer, movie));
+        }
+        customer.removeMovie(movie);
+        customerDao.updateCustomer(customer);
+        log.info("Movie removed from customer successfully: Customer={}, Movie={}", customer.getName(), movie.getName());
     }
 }

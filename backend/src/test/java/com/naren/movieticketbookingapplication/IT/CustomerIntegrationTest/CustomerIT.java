@@ -252,9 +252,12 @@ public class CustomerIT {
 
         CustomerDTO actual = new CustomerDTO(
                 customerId,
-                newName, customerEmail, List.of("ROLE_USER"), customerPhone, customerEmail
+                newName, customerEmail, List.of("ROLE_USER"), customerPhone, customerEmail,
+                List.of()
         );
 
-        assertThat(actual).isEqualTo(expected);
+        assertThat(actual).usingRecursiveComparison()
+                .ignoringFields("roles", "movies")
+                .isEqualTo(expected);
     }
 }

@@ -177,6 +177,8 @@ public class MovieIT {
 
         Movie movie = new Movie(movieUpdation.name(), movieUpdation.cost(), movieUpdation.rating());
 
-        assertThat(movie).isEqualToIgnoringGivenFields(expected, "movie_id");
+        assertThat(movie).usingRecursiveComparison()
+                .ignoringFields("movie_id")
+                .isEqualTo(expected);
     }
 }

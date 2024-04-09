@@ -17,4 +17,9 @@ public interface CustomerService {
     List<CustomerDTO> getAllCustomers();
 
     void deleteCustomer(Long customerId);
+
+    void addMovieToCustomer(Long customerId, Long movieId);
+
+    void removeMovieFromCustomer(Long customerId, Long movieId);
+
 }

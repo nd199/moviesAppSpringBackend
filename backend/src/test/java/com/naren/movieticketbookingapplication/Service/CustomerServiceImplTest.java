@@ -1,6 +1,7 @@
 package com.naren.movieticketbookingapplication.Service;
 
 import com.naren.movieticketbookingapplication.Dao.CustomerDao;
+import com.naren.movieticketbookingapplication.Dao.MovieDao;
 import com.naren.movieticketbookingapplication.Dto.CustomerDTO;
 import com.naren.movieticketbookingapplication.Dto.CustomerDTOMapper;
 import com.naren.movieticketbookingapplication.Entity.Customer;
@@ -34,11 +35,14 @@ class CustomerServiceImplTest {
     @Mock
     private PasswordEncoder passwordEncoder;
 
+    @Mock
+    private MovieDao movieDao;
+
     private CustomerServiceImpl underTest;
 
     @BeforeEach
     void setUp() {
-        underTest = new CustomerServiceImpl(customerDao, passwordEncoder, customerDTOMapper);
+        underTest = new CustomerServiceImpl(customerDao, passwordEncoder, customerDTOMapper, movieDao);
     }
 
     @Test

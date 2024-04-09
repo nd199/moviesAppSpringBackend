@@ -63,9 +63,11 @@ class MovieServiceImplTest {
 
         when(movieDao.existsByName("testName")).thenReturn(true);
 
-        assertThatThrownBy(() -> underTest.addMovie(registration))
+        assertThatThrownBy(
+                () -> underTest.addMovie(registration))
                 .isInstanceOf(ResourceAlreadyExists.class)
-                .hasMessageContaining("Movie name 'testName' already exists");
+                .hasMessageContaining("Movie name %s already exists".formatted(registration.name())
+                );
 
         verify(movieDao, never()).addMovie(any());
     }
@@ -90,7 +92,7 @@ class MovieServiceImplTest {
 
         assertThatThrownBy(() -> underTest.removeMovie(id))
                 .isInstanceOf(ResourceNotFoundException.class)
-                .hasMessageContaining("Movie with ID '1' not found");
+                .hasMessageContaining("Movie with ID %s not found".formatted(id));
 
         verify(movieDao, never()).removeMovie(any());
     }

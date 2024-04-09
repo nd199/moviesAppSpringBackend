@@ -1,5 +1,6 @@
 package com.naren.movieticketbookingapplication.Dto;
 
+import com.naren.movieticketbookingapplication.Entity.Movie;
 import java.util.List;
 
 public record CustomerDTO(
@@ -8,6 +9,6 @@ public record CustomerDTO(
         String email,
         List<String> roles,
         Long phoneNumber,
-        String userName
-) {
+        String userName,
+        List<Movie> movies) {
 }

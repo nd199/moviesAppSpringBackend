@@ -9,6 +9,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -18,7 +19,7 @@ import java.util.Objects;
         @UniqueConstraint(name = "email_id_unique",
                 columnNames = "email"),
         @UniqueConstraint(name = "phone_number_unique",
-                columnNames = "phoneNumber")
+                columnNames = "phone_number")
 })
 @Getter
 @Setter
@@ -41,8 +42,11 @@ public class Customer implements UserDetails {
     @Column(name = "password", columnDefinition = "TEXT", nullable = false, length = 8)
     private String password;
 
-    @Column(name = "phoneNumber", nullable = false)
+    @Column(name = "phone_number", nullable = false)
     private Long phoneNumber;
+
+    @Transient
+    private List<Movie> movies = new ArrayList<>();
 
     public Customer(Long customer_id, String name, String email, String password, Long phoneNumber) {
         this.customer_id = customer_id;
@@ -86,7 +90,7 @@ public class Customer implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_USER"));
+        return List.of(new SimpleGrantedAuthority("ROLE_USER"), new SimpleGrantedAuthority("ROLE_ADMIN"));
     }
 
     @Override
@@ -112,5 +116,19 @@ public class Customer implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    public void addMovie(Movie movie) {
+        if (!movies.contains(movie) && movie != null) {
+            movies.add(movie);
+            movie.getCustomers().add(this);
+        }
+    }
+
+    public void removeMovie(Movie movie) {
+        if (!movies.contains(movie) && movie != null) {
+            movies.remove(movie);
+            movie.getCustomers().remove(this);
+        }
     }
 }

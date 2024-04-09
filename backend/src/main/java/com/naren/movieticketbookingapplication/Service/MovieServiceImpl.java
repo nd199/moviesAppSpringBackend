@@ -26,10 +26,11 @@ public class MovieServiceImpl implements MovieService {
 
     @Override
     public void addMovie(MovieRegistration registration) {
+        log.info("Creating movie: {}", registration);
         Movie movie = createMovie(registration);
         if (movieDao.existsByName(registration.name())) {
-            String errorMessage = "Movie name '%s' already exists".formatted(registration.name());
-            log.error(errorMessage);
+            String errorMessage = "Movie name %s already exists".formatted(registration.name());
+            log.error(errorMessage, registration.name());
             throw new ResourceAlreadyExists(errorMessage);
         }
         movieDao.addMovie(movie);
@@ -46,10 +47,11 @@ public class MovieServiceImpl implements MovieService {
 
     @Override
     public void removeMovie(Long id) {
+        log.info("Removing movie with ID: {}", id);
         Movie movie = movieDao.getMovieById(id)
                 .orElseThrow(() -> {
-                    String errorMessage = "Movie with ID '%s' not found".formatted(id);
-                    log.error(errorMessage);
+                    String errorMessage = "Movie with ID %s not found".formatted(id);
+                    log.error(errorMessage, id);
                     return new ResourceNotFoundException(errorMessage);
                 });
         movieDao.removeMovie(movie);
@@ -58,16 +60,18 @@ public class MovieServiceImpl implements MovieService {
 
     @Override
     public Movie getMovieById(Long id) {
+        log.info("Fetching movie by ID: {}", id);
         return movieDao.getMovieById(id)
                 .orElseThrow(() -> {
                     String errorMessage = "Movie with ID '%s' not found".formatted(id);
-                    log.error(errorMessage);
+                    log.error(errorMessage, id);
                     return new ResourceNotFoundException(errorMessage);
                 });
     }
 
     @Override
     public List<Movie> getMovieList() {
+        log.info("Fetching list of movies");
         List<Movie> movies = movieDao.getMovieList();
         log.info("Retrieved {} movies", movies.size());
         return movies;
@@ -75,6 +79,7 @@ public class MovieServiceImpl implements MovieService {
 
     @Override
     public void updateMovie(MovieUpdation update, Long movieId) {
+        log.info("Updating movie with ID: {}", movieId);
         Movie movie = movieDao.getMovieById(movieId)
                 .orElseThrow(() -> new ResourceNotFoundException("Movie not found"));
 
