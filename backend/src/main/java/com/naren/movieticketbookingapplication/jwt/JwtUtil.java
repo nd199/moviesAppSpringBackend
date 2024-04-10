@@ -1,12 +1,14 @@
 package com.naren.movieticketbookingapplication.jwt;
 
+import com.naren.movieticketbookingapplication.Exception.AlgorithmNotSupportedException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
+import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
@@ -16,7 +18,20 @@ import java.util.Map;
 @Service
 public class JwtUtil {
 
-    private static final SecretKey SECRET_KEY = Keys.secretKeyFor(io.jsonwebtoken.SignatureAlgorithm.HS256);
+    private static final SecretKey SECRET_KEY;
+
+    static {
+        try {
+            SECRET_KEY = generateSecretKey();
+        } catch (NoSuchAlgorithmException e) {
+            throw new AlgorithmNotSupportedException("Algorithm not supported");
+        }
+    }
+
+    private static SecretKey generateSecretKey() throws NoSuchAlgorithmException {
+        KeyGenerator keyGenerator = KeyGenerator.getInstance("HmacSHA256");
+        return keyGenerator.generateKey();
+    }
 
     public String issueToken(String subject, String... scopes) {
         return issueToken(subject, Map.of("scopes", scopes));
@@ -25,11 +40,11 @@ public class JwtUtil {
     public String issueToken(String subject, Map<String, Object> claims) {
         log.debug("Issuing JWT token for subject: {}", subject);
         return Jwts.builder()
-                .setClaims(claims)
-                .setSubject(subject)
-                .setIssuer("codeNaren.com")
-                .setIssuedAt(Date.from(Instant.now()))
-                .setExpiration(Date.from(Instant.now().plus(15, ChronoUnit.DAYS)))
+                .claims(claims)
+                .subject(subject)
+                .issuer("codeNaren.com")
+                .issuedAt(Date.from(Instant.now()))
+                .expiration(Date.from(Instant.now().plus(15, ChronoUnit.DAYS)))
                 .signWith(SECRET_KEY)
                 .compact();
     }
