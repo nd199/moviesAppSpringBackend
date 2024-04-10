@@ -2,6 +2,7 @@ package com.naren.movieticketbookingapplication.Service;
 
 import com.naren.movieticketbookingapplication.Dao.CustomerDao;
 import com.naren.movieticketbookingapplication.Entity.Customer;
+import com.naren.movieticketbookingapplication.Entity.Role;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -32,8 +33,8 @@ public class CustomerUserDetailsService implements UserDetailsService {
         log.info("User details loaded successfully for username: {}", username);
         return org.springframework.security.core.userdetails.User
                 .withUsername(username)
-                .password(customer.getPassword()) // Assuming password is stored securely (e.g., hashed)
-                .roles("USER") // Assigning a basic role for all customers
+                .password(customer.getPassword())
+                .roles(customer.getRoles().stream().map(Role::getName).toArray(String[]::new))
                 .build();
     }
 }

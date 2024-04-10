@@ -10,10 +10,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Entity
 @Table(name = "Customer", uniqueConstraints = {
@@ -49,6 +46,13 @@ public class Customer implements UserDetails {
     @OneToMany(mappedBy = "customer", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JsonIgnore
     private List<Movie> movies = new ArrayList<>();
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "customers_roles",
+            joinColumns = @JoinColumn(name = "customer_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    private Set<Role> roles = new HashSet<>();
 
     public Customer(Long customer_id, String name, String email, String password, Long phoneNumber) {
         this.customer_id = customer_id;
@@ -132,5 +136,15 @@ public class Customer implements UserDetails {
             movies.remove(movie);
             movie.setCustomer(null);
         }
+    }
+
+    public void addRole(Role role) {
+        this.roles.add(role);
+        role.getCustomers().add(this);
+    }
+
+    public void removeRole(Role role) {
+        this.roles.remove(role);
+        role.getCustomers().remove(this);
     }
 }

@@ -12,7 +12,9 @@ import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 @Slf4j
 @Service
@@ -39,10 +41,17 @@ public class JwtUtil {
 
     public String issueToken(String subject, Map<String, Object> claims) {
         log.debug("Issuing JWT token for subject: {}", subject);
-        return Jwts.builder()
+        return Jwts.builder().claims(claims).subject(subject).issuer("codeNaren.com").issuedAt(Date.from(Instant.now())).expiration(Date.from(Instant.now().plus(15, ChronoUnit.DAYS))).signWith(SECRET_KEY).compact();
+    }
+
+    public String issueToken(String subject, Set<String> roles) {
+        Map<String, Object> claims = new HashMap<String, Object>();
+        claims.put("subject", subject);
+        claims.put("roles", roles);
+
+        return Jwts
+                .builder()
                 .claims(claims)
-                .subject(subject)
-                .issuer("codeNaren.com")
                 .issuedAt(Date.from(Instant.now()))
                 .expiration(Date.from(Instant.now().plus(15, ChronoUnit.DAYS)))
                 .signWith(SECRET_KEY)
@@ -51,17 +60,17 @@ public class JwtUtil {
 
     private Claims getClaims(String token) {
         log.debug("Parsing and verifying JWT token");
-        return Jwts
-                .parser()
-                .verifyWith(SECRET_KEY)
-                .build()
-                .parseSignedClaims(token)
-                .getPayload();
+        return Jwts.parser().verifyWith(SECRET_KEY).build().parseSignedClaims(token).getPayload();
     }
 
     public String getSubject(String token) {
         log.debug("Getting subject from JWT token");
         return getClaims(token).getSubject();
+    }
+
+    public Set<String> getRoles(String token) {
+        //noinspection unchecked
+        return (Set<String>) getClaims(token).get("roles");
     }
 
     public boolean isTokenValid(String token, String userName) {
