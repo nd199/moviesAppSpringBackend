@@ -1,6 +1,7 @@
 package com.naren.movieticketbookingapplication.Entity;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -45,7 +46,8 @@ public class Customer implements UserDetails {
     @Column(name = "phone_number", nullable = false)
     private Long phoneNumber;
 
-    @Transient
+    @OneToMany(mappedBy = "customer", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Movie> movies = new ArrayList<>();
 
     public Customer(Long customer_id, String name, String email, String password, Long phoneNumber) {
@@ -121,14 +123,14 @@ public class Customer implements UserDetails {
     public void addMovie(Movie movie) {
         if (!movies.contains(movie) && movie != null) {
             movies.add(movie);
-            movie.getCustomers().add(this);
+            movie.setCustomer(this);
         }
     }
 
     public void removeMovie(Movie movie) {
         if (!movies.contains(movie) && movie != null) {
             movies.remove(movie);
-            movie.getCustomers().remove(this);
+            movie.setCustomer(null);
         }
     }
 }

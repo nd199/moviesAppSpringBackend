@@ -1,12 +1,11 @@
 package com.naren.movieticketbookingapplication.Entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -36,8 +35,10 @@ public class Movie {
     @Column(name = "rating", nullable = false)
     private Double rating;
 
-    @Transient
-    private List<Customer> customers = new ArrayList<>();
+    @ManyToOne
+    @JoinColumn(name = "customer_id")
+    @JsonBackReference
+    private Customer customer;
 
     public Movie(Long movie_id, String name, Double cost, Double rating) {
         this.movie_id = movie_id;

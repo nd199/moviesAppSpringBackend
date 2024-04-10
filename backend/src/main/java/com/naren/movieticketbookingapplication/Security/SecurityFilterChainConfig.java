@@ -1,6 +1,6 @@
 package com.naren.movieticketbookingapplication.Security;
 
-import com.naren.movieticketbookingapplication.JWT.JwtAuthFilter;
+import com.naren.movieticketbookingapplication.jwt.JwtAuthFilter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -37,12 +37,9 @@ public class SecurityFilterChainConfig {
                 .authorizeHttpRequests(auth ->
                         auth
                                 .requestMatchers(HttpMethod.POST, "/api/v1/customers", "/api/v1/movies").permitAll()
-                                // Permit all GET requests to "/api/v1/movies/{id}"
                                 .requestMatchers(HttpMethod.GET, "/api/v1/movies", "api/v1/movies/{id}").permitAll()
-                                // Permit all PUT and DELETE requests to "/api/v1/movies/{id}"
                                 .requestMatchers(HttpMethod.PUT, "/api/v1/movies/{id}").permitAll()
                                 .requestMatchers(HttpMethod.DELETE, "/api/v1/movies/{id}").permitAll()
-                                // Require authentication for any other requests
                                 .anyRequest().authenticated()
                 )
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

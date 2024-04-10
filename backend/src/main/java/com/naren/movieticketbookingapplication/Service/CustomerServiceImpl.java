@@ -21,6 +21,7 @@ import java.util.List;
 @Service
 public class CustomerServiceImpl implements CustomerService {
 
+    private static final long REQ_PASSWORD_LENGTH = 8;
     private final CustomerDao customerDao;
     private final PasswordEncoder passwordEncoder;
     private final CustomerDTOMapper customerDTOMapper;
@@ -33,7 +34,9 @@ public class CustomerServiceImpl implements CustomerService {
         this.movieDao = movieDao;
     }
 
-    private static final long REQ_PASSWORD_LENGTH = 8;
+    private static boolean containsPersonalInfo(String password, String name, String email, Long phoneNumber) {
+        return password.contains(name) || password.contains(email) || password.contains(String.valueOf(phoneNumber));
+    }
 
     private boolean validatePassword(String password, String name, String email, Long phoneNumber) {
         if (password == null || password.length() < REQ_PASSWORD_LENGTH) {
@@ -45,10 +48,6 @@ public class CustomerServiceImpl implements CustomerService {
             throw new PasswordInvalidException("Password must not contain name, email, or phone number.");
         }
         return true;
-    }
-
-    private static boolean containsPersonalInfo(String password, String name, String email, Long phoneNumber) {
-        return password.contains(name) || password.contains(email) || password.contains(String.valueOf(phoneNumber));
     }
 
     @Override

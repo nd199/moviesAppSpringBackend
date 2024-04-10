@@ -2,10 +2,10 @@ package com.naren.movieticketbookingapplication.Controller;
 
 import com.naren.movieticketbookingapplication.Dto.CustomerDTO;
 import com.naren.movieticketbookingapplication.Entity.Customer;
-import com.naren.movieticketbookingapplication.JWT.JwtUtil;
 import com.naren.movieticketbookingapplication.Record.CustomerRegistration;
 import com.naren.movieticketbookingapplication.Record.CustomerUpdateRequest;
 import com.naren.movieticketbookingapplication.Service.CustomerService;
+import com.naren.movieticketbookingapplication.jwt.JwtUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;

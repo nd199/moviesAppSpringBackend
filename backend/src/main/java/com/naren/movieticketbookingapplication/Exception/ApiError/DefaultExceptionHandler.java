@@ -1,6 +1,7 @@
 package com.naren.movieticketbookingapplication.Exception.ApiError;
 
 import com.naren.movieticketbookingapplication.Exception.ResourceNotFoundException;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -8,7 +9,6 @@ import org.springframework.security.authentication.InsufficientAuthenticationExc
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 
 import static org.springframework.http.HttpStatus.*;

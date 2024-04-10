@@ -1,4 +1,4 @@
-package com.naren.movieticketbookingapplication.JWT;
+package com.naren.movieticketbookingapplication.jwt;
 
 import com.naren.movieticketbookingapplication.Service.CustomerUserDetailsService;
 import jakarta.servlet.FilterChain;

@@ -1,7 +1,6 @@
 package com.naren.movieticketbookingapplication.Dao;
 
 import com.naren.movieticketbookingapplication.Entity.Customer;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.List;
 import java.util.Optional;
