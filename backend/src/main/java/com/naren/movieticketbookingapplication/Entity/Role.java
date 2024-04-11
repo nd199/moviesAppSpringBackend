@@ -1,5 +1,6 @@
 package com.naren.movieticketbookingapplication.Entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,8 +19,12 @@ public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(nullable = false)
     private String name;
+
     @ManyToMany(mappedBy = "roles")
+    @JsonIgnore
     Set<Customer> customers = new HashSet<Customer>();
 
     public Role(Long id, String name, Set<Customer> customers) {

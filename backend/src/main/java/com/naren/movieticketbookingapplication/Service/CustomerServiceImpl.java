@@ -6,15 +6,22 @@ import com.naren.movieticketbookingapplication.Dto.CustomerDTO;
 import com.naren.movieticketbookingapplication.Dto.CustomerDTOMapper;
 import com.naren.movieticketbookingapplication.Entity.Customer;
 import com.naren.movieticketbookingapplication.Entity.Movie;
+import com.naren.movieticketbookingapplication.Entity.Role;
 import com.naren.movieticketbookingapplication.Exception.*;
 import com.naren.movieticketbookingapplication.Record.CustomerRegistration;
 import com.naren.movieticketbookingapplication.Record.CustomerUpdateRequest;
+import com.naren.movieticketbookingapplication.jwt.JwtUtil;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Slf4j
 @Transactional
@@ -25,59 +32,93 @@ public class CustomerServiceImpl implements CustomerService {
     private final CustomerDao customerDao;
     private final PasswordEncoder passwordEncoder;
     private final CustomerDTOMapper customerDTOMapper;
+    private final RoleService roleService;
     private final MovieDao movieDao;
+    private final JwtUtil jwtUtil;
 
-    public CustomerServiceImpl(CustomerDao customerDao, PasswordEncoder passwordEncoder, CustomerDTOMapper customerDTOMapper, MovieDao movieDao) {
+    public CustomerServiceImpl(CustomerDao customerDao, PasswordEncoder passwordEncoder, CustomerDTOMapper customerDTOMapper, RoleService roleService, MovieDao movieDao, JwtUtil jwtUtil) {
         this.customerDao = customerDao;
         this.passwordEncoder = passwordEncoder;
         this.customerDTOMapper = customerDTOMapper;
+        this.roleService = roleService;
         this.movieDao = movieDao;
+        this.jwtUtil = jwtUtil;
     }
 
-    private static boolean containsPersonalInfo(String password, String name, String email, Long phoneNumber) {
-        return password.contains(name) || password.contains(email) || password.contains(String.valueOf(phoneNumber));
+    @Override
+    public void addRole(Role role) {
+        if (role == null) throw new ResourceNotFoundException("Role cannot be null");
+        if(roleService.existsByName(role)) throw new ResourceAlreadyExists("Role already exists");
+        roleService.saveRole(role);
+    }
+
+    @Override
+    public List<Role> getRoles() {
+        return roleService.getAllRoles();
+    }
+
+    @Override
+    public ResponseEntity<?> registerUser(CustomerRegistration customerRegistration,
+                                          Set<String> roleNames) {
+
+        Customer registeredCustomer = registerCustomer(customerRegistration);
+
+        Set<Role> roles = new HashSet<>();
+
+        for (String roleName : roleNames) {
+            Role role = roleService.findRoleByName(roleName);
+            if (role == null) {
+                return ResponseEntity.badRequest().body("Role " + roleName + " not found");
+            }
+            roles.add(role);
+        }
+
+        roles.forEach(registeredCustomer::addRole);
+
+        customerDao.addCustomer(registeredCustomer);
+
+        String token = jwtUtil.issueToken(registeredCustomer.getUsername(), roles);
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .header(HttpHeaders.AUTHORIZATION, token)
+                .body("Customer registered successfully!");
+    }
+
+
+    private Customer registerCustomer(CustomerRegistration customerRegistration) {
+
+        boolean isValidPassword = validatePassword(customerRegistration.password(),
+                customerRegistration.name(),
+                customerRegistration.email(),
+                customerRegistration.phoneNumber());
+        if (!isValidPassword) {
+            throw new PasswordInvalidException("Invalid password");
+        }
+
+        if (customerDao.existsByEmail(customerRegistration.email())) {
+            throw new ResourceAlreadyExists("Email already taken");
+        }
+        if (customerDao.existsByPhoneNumber(customerRegistration.phoneNumber())) {
+            throw new ResourceAlreadyExists("Phone number already taken");
+        }
+        return new Customer(customerRegistration.name(),
+                customerRegistration.email(),
+                passwordEncoder.encode(customerRegistration.password()),
+                customerRegistration.phoneNumber());
     }
 
     private boolean validatePassword(String password, String name, String email, Long phoneNumber) {
         if (password == null || password.length() < REQ_PASSWORD_LENGTH) {
             log.error("Password must be at least {} characters long", REQ_PASSWORD_LENGTH);
-            throw new PasswordInvalidException("Password must be at least " + REQ_PASSWORD_LENGTH + " characters long.");
+            return false;
         }
-        if (containsPersonalInfo(password, name, email, phoneNumber)) {
-            log.error("Password must not contain name, email, or phone number");
-            throw new PasswordInvalidException("Password must not contain name, email, or phone number.");
-        }
-        return true;
+        return !containsPersonalInfo(password, name, email, phoneNumber);
     }
 
-    @Override
-    public void createCustomer(CustomerRegistration registration) {
-        log.info("Creating customer: {}", registration.email());
-
-        boolean isValid = validatePassword(registration.password(), registration.name(), registration.email(), registration.phoneNumber());
-
-        if (isValid) {
-            if (customerDao.existsByEmail(registration.email())) {
-                log.error("Email {} already exists", registration.email());
-                throw new ResourceAlreadyExists("Email already taken");
-            } else if (customerDao.existsByPhoneNumber(registration.phoneNumber())) {
-                log.error("Phone number {} already exists", registration.phoneNumber());
-                throw new ResourceAlreadyExists("Phone number already taken");
-            }
-
-            Customer customer = getCustomer(registration);
-            customerDao.addCustomer(customer);
-        }
+    private boolean containsPersonalInfo(String password, String name, String email, Long phoneNumber) {
+        return password.contains(name) || password.contains(email) || password.contains(String.valueOf(phoneNumber));
     }
 
-    private Customer getCustomer(CustomerRegistration registration) {
-        return new Customer(
-                registration.name(),
-                registration.email(),
-                passwordEncoder.encode(registration.password()),
-                registration.phoneNumber()
-        );
-    }
 
     @Override
     public CustomerDTO getCustomerById(Long customerId) {

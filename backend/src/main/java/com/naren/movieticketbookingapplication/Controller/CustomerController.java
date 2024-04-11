@@ -2,17 +2,17 @@ package com.naren.movieticketbookingapplication.Controller;
 
 import com.naren.movieticketbookingapplication.Dto.CustomerDTO;
 import com.naren.movieticketbookingapplication.Entity.Customer;
+import com.naren.movieticketbookingapplication.Entity.Role;
 import com.naren.movieticketbookingapplication.Record.CustomerRegistration;
 import com.naren.movieticketbookingapplication.Record.CustomerUpdateRequest;
 import com.naren.movieticketbookingapplication.Service.CustomerService;
-import com.naren.movieticketbookingapplication.jwt.JwtUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -20,24 +20,27 @@ import java.util.List;
 public class CustomerController {
 
     private final CustomerService customerService;
-    private final JwtUtil jwtUtil;
 
-    public CustomerController(CustomerService customerService, JwtUtil jwtUtil) {
+    public CustomerController(CustomerService customerService) {
         this.customerService = customerService;
-        this.jwtUtil = jwtUtil;
+    }
+
+    @PostMapping("/roles")
+    public ResponseEntity<?> addRoleToDb(@RequestBody Role role) {
+        customerService.addRole(role);
+        return ResponseEntity.ok().body("Role added successfully");
     }
 
     @PostMapping("/customers")
-    public ResponseEntity<?> createCustomer(@RequestBody CustomerRegistration registration) {
-        log.info("Creating customer...");
-        customerService.createCustomer(registration);
-        String token = jwtUtil.issueToken(registration.email(), "ROLE_USER");
-        log.info("Token Created.");
-        log.info("Token Sent Successfully.");
-        return ResponseEntity.ok()
-                .header(HttpHeaders.AUTHORIZATION, token)
-                .build();
+    public ResponseEntity<?> addCustomer(@RequestBody CustomerRegistration customerRegistration) {
+        return customerService.registerUser(customerRegistration, Set.of("ROLE_USER"));
     }
+
+    @PostMapping("/admins")
+    public ResponseEntity<?> addAdmin(@RequestBody CustomerRegistration customerRegistration) {
+        return customerService.registerUser(customerRegistration, Set.of("ROLE_ADMIN"));
+    }
+
 
     @GetMapping("/customers/{id}")
     public ResponseEntity<CustomerDTO> getCustomerById(@PathVariable("id") Long customerId) {
@@ -83,5 +86,10 @@ public class CustomerController {
         log.info("Removing movie with ID {} from customer with ID: {}", movieId, customerId);
         customerService.removeMovieFromCustomer(customerId, movieId);
         log.info("Movie with ID {} removed from customer with ID: {}", movieId, customerId);
+    }
+
+    @GetMapping("/roles")
+    public ResponseEntity<List<Role>> getRoles() {
+        return ResponseEntity.ok(customerService.getRoles());
     }
 }

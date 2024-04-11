@@ -1,5 +1,6 @@
 package com.naren.movieticketbookingapplication.jwt;
 
+import com.naren.movieticketbookingapplication.Entity.Role;
 import com.naren.movieticketbookingapplication.Exception.AlgorithmNotSupportedException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -41,22 +42,30 @@ public class JwtUtil {
 
     public String issueToken(String subject, Map<String, Object> claims) {
         log.debug("Issuing JWT token for subject: {}", subject);
-        return Jwts.builder().claims(claims).subject(subject).issuer("codeNaren.com").issuedAt(Date.from(Instant.now())).expiration(Date.from(Instant.now().plus(15, ChronoUnit.DAYS))).signWith(SECRET_KEY).compact();
+        return Jwts.builder().claims(claims)
+                .subject(subject)
+                .issuer("codeNaren.com")
+                .issuedAt(Date.from(Instant.now()))
+                .expiration(Date.from(Instant.now().plus(15, ChronoUnit.DAYS)))
+                .signWith(SECRET_KEY)
+                .compact();
     }
 
-    public String issueToken(String subject, Set<String> roles) {
-        Map<String, Object> claims = new HashMap<String, Object>();
+    public String issueToken(String subject, Set<Role> roles) {
+        Map<String, Object> claims = new HashMap<>();
         claims.put("subject", subject);
         claims.put("roles", roles);
 
         return Jwts
                 .builder()
                 .claims(claims)
+                .subject(subject)
                 .issuedAt(Date.from(Instant.now()))
                 .expiration(Date.from(Instant.now().plus(15, ChronoUnit.DAYS)))
                 .signWith(SECRET_KEY)
                 .compact();
     }
+
 
     private Claims getClaims(String token) {
         log.debug("Parsing and verifying JWT token");
@@ -68,10 +77,10 @@ public class JwtUtil {
         return getClaims(token).getSubject();
     }
 
-    public Set<String> getRoles(String token) {
-        //noinspection unchecked
-        return (Set<String>) getClaims(token).get("roles");
-    }
+//    public Set<String> getRoles(String token) {
+//        //noinspection unchecked
+//        return (Set<String>) getClaims(token).get("roles");
+//    }
 
     public boolean isTokenValid(String token, String userName) {
         try {

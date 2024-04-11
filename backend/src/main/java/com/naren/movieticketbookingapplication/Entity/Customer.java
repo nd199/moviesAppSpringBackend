@@ -1,6 +1,7 @@
 package com.naren.movieticketbookingapplication.Entity;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -50,8 +51,13 @@ public class Customer implements UserDetails {
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "customers_roles",
             joinColumns = @JoinColumn(name = "customer_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id")
+            inverseJoinColumns = @JoinColumn(
+                    name = "role_id",
+                    foreignKey = @ForeignKey(name = "fk_customer_role_id")
+            ),
+            foreignKey = @ForeignKey(name = "fk_customers_role_customer_id")
     )
+    @JsonBackReference
     private Set<Role> roles = new HashSet<>();
 
     public Customer(Long customer_id, String name, String email, String password, Long phoneNumber) {
@@ -96,7 +102,12 @@ public class Customer implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_USER"), new SimpleGrantedAuthority("ROLE_ADMIN"));
+        List<GrantedAuthority> authorities = new ArrayList<>();
+        Set<Role> roles1 = this.roles;
+        for (Role role : roles1) {
+            authorities.add(new SimpleGrantedAuthority(role.getName()));
+        }
+        return authorities;
     }
 
     @Override
