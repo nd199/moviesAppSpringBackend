@@ -4,6 +4,7 @@ package com.naren.movieticketbookingapplication.IT.CustomerIntegrationTest;
 import com.github.javafaker.Faker;
 import com.github.javafaker.Name;
 import com.naren.movieticketbookingapplication.Dto.CustomerDTO;
+import com.naren.movieticketbookingapplication.Entity.Role;
 import com.naren.movieticketbookingapplication.Record.CustomerRegistration;
 import com.naren.movieticketbookingapplication.Record.CustomerUpdateRequest;
 import org.junit.jupiter.api.Test;
@@ -31,6 +32,22 @@ public class CustomerIT {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+
+    @Test
+    void addRoleTODb() {
+        var Role = new Role("ROLE_USER");
+
+        webTestClient.post()
+                .uri("/api/v1/roles")
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(Role)
+                .exchange()
+                .expectStatus()
+                .isOk()
+                .expectBody(String.class)
+                .isEqualTo("Role added successfully");
+    }
 
     @Test
     void createCustomer() {

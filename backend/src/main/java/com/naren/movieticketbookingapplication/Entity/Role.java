@@ -16,16 +16,14 @@ import java.util.Set;
 @NoArgsConstructor
 public class Role {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Column(nullable = false)
-    private String name;
-
     @ManyToMany(mappedBy = "roles")
     @JsonIgnore
     Set<Customer> customers = new HashSet<Customer>();
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    @Column(nullable = false)
+    private String name;
 
     public Role(Long id, String name, Set<Customer> customers) {
         this.id = id;

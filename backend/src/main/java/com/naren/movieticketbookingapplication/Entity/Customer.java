@@ -143,7 +143,7 @@ public class Customer implements UserDetails {
     }
 
     public void removeMovie(Movie movie) {
-        if (!movies.contains(movie) && movie != null) {
+        if (movies.contains(movie) && movie != null) {
             movies.remove(movie);
             movie.setCustomer(null);
         }

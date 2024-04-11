@@ -27,20 +27,29 @@ public class CustomerController {
 
     @PostMapping("/roles")
     public ResponseEntity<?> addRoleToDb(@RequestBody Role role) {
+        log.info("Received request to add role: {}", role);
         customerService.addRole(role);
-        return ResponseEntity.ok().body("Role added successfully");
+        log.info("Role added successfully: {}", role);
+        return ResponseEntity
+                .ok()
+                .body("Role added successfully");
     }
 
     @PostMapping("/customers")
     public ResponseEntity<?> addCustomer(@RequestBody CustomerRegistration customerRegistration) {
-        return customerService.registerUser(customerRegistration, Set.of("ROLE_USER"));
+        log.info("Received request to add customer: {}", customerRegistration);
+        ResponseEntity<?> response = customerService.registerUser(customerRegistration, Set.of("ROLE_USER"));
+        log.info("Customer registration response: {}", response);
+        return response;
     }
 
     @PostMapping("/admins")
     public ResponseEntity<?> addAdmin(@RequestBody CustomerRegistration customerRegistration) {
-        return customerService.registerUser(customerRegistration, Set.of("ROLE_ADMIN"));
+        log.info("Received request to add admin: {}", customerRegistration);
+        ResponseEntity<?> response = customerService.registerUser(customerRegistration, Set.of("ROLE_ADMIN"));
+        log.info("Admin registration response: {}", response);
+        return response;
     }
-
 
     @GetMapping("/customers/{id}")
     public ResponseEntity<CustomerDTO> getCustomerById(@PathVariable("id") Long customerId) {
@@ -81,7 +90,7 @@ public class CustomerController {
         log.info("Movie with ID {} added to customer with ID: {}", movieId, customerId);
     }
 
-    @PutMapping("/customers/remove-movie/{customerId}/{movieId}")
+    @DeleteMapping("/customers/remove-movie/{customerId}/{movieId}")
     public void removeMovieFromCustomer(@PathVariable Long customerId, @PathVariable Long movieId) {
         log.info("Removing movie with ID {} from customer with ID: {}", movieId, customerId);
         customerService.removeMovieFromCustomer(customerId, movieId);

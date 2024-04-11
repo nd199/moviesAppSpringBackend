@@ -7,7 +7,10 @@ import com.naren.movieticketbookingapplication.Dto.CustomerDTOMapper;
 import com.naren.movieticketbookingapplication.Entity.Customer;
 import com.naren.movieticketbookingapplication.Entity.Movie;
 import com.naren.movieticketbookingapplication.Entity.Role;
-import com.naren.movieticketbookingapplication.Exception.*;
+import com.naren.movieticketbookingapplication.Exception.PasswordInvalidException;
+import com.naren.movieticketbookingapplication.Exception.RequestValidationException;
+import com.naren.movieticketbookingapplication.Exception.ResourceAlreadyExists;
+import com.naren.movieticketbookingapplication.Exception.ResourceNotFoundException;
 import com.naren.movieticketbookingapplication.Record.CustomerRegistration;
 import com.naren.movieticketbookingapplication.Record.CustomerUpdateRequest;
 import com.naren.movieticketbookingapplication.jwt.JwtUtil;
@@ -47,8 +50,10 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public void addRole(Role role) {
-        if (role == null) throw new ResourceNotFoundException("Role cannot be null");
-        if(roleService.existsByName(role)) throw new ResourceAlreadyExists("Role already exists");
+        if (role == null)
+            throw new ResourceNotFoundException("Role cannot be null");
+        if (roleService.existsByName(role))
+            throw new ResourceAlreadyExists("Role already exists");
         roleService.saveRole(role);
     }
 
@@ -94,7 +99,6 @@ public class CustomerServiceImpl implements CustomerService {
         if (!isValidPassword) {
             throw new PasswordInvalidException("Invalid password");
         }
-
         if (customerDao.existsByEmail(customerRegistration.email())) {
             throw new ResourceAlreadyExists("Email already taken");
         }
@@ -168,13 +172,11 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public List<CustomerDTO> getAllCustomers() {
         log.info("Fetching all customers");
-
         List<CustomerDTO> customers = customerDao.getCustomerList()
                 .stream()
                 .map(customerDTOMapper)
                 .toList();
         log.info("Retrieved {} customers", customers.size());
-
         return customers;
     }
 
@@ -199,7 +201,7 @@ public class CustomerServiceImpl implements CustomerService {
                 .orElseThrow(() -> new ResourceNotFoundException("Movie with ID " + movieId + " not found"));
 
         if (customer.getMovies().contains(movie)) {
-            throw new Customer_MovieAlreadyExistsException(
+            throw new ResourceAlreadyExists(
                     "Customer %s already subscribed to %s movie".formatted(customer, movie));
         }
         customer.addMovie(movie);
@@ -218,7 +220,7 @@ public class CustomerServiceImpl implements CustomerService {
                 .orElseThrow(() -> new ResourceNotFoundException("Movie with ID " + movieId + " not found"));
 
         if (!customer.getMovies().contains(movie)) {
-            throw new Customer_MovieNotFound(
+            throw new ResourceNotFoundException(
                     "Customer %s not subscribed to %s movie".formatted(customer, movie));
         }
         customer.removeMovie(movie);
