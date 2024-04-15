@@ -19,22 +19,20 @@ import static org.mockito.Mockito.*;
 
 class CustomerDaoImplTest extends AbstractTestContainers {
 
-
     private CustomerDaoImpl underTest;
-
     private AutoCloseable autoCloseable;
-
     @Mock
     private CustomerRepository customerRepository;
-
-    private static Customer getNewCustomer() {
-        return new Customer(1L, FAKER.name().name(), FAKER.internet().emailAddress(), FAKER.internet().password(), Long.valueOf(FAKER.phoneNumber().subscriberNumber(9)));
-    }
+    private Customer customer;
 
     @BeforeEach
     void setUp() {
         autoCloseable = MockitoAnnotations.openMocks(this);
         underTest = new CustomerDaoImpl(customerRepository);
+
+        customer = new Customer(1L, FAKER.name().name(),
+                FAKER.internet().emailAddress(), FAKER.internet().password(),
+                Long.valueOf(FAKER.phoneNumber().subscriberNumber(9)));
     }
 
     @AfterEach
@@ -44,7 +42,6 @@ class CustomerDaoImplTest extends AbstractTestContainers {
 
     @Test
     void addCustomer() {
-        Customer customer = getNewCustomer();
 
         underTest.addCustomer(customer);
 
@@ -53,7 +50,6 @@ class CustomerDaoImplTest extends AbstractTestContainers {
 
     @Test
     void getCustomer() {
-        Customer customer = getNewCustomer();
 
         underTest.getCustomer(customer.getCustomer_id());
 
@@ -62,8 +58,6 @@ class CustomerDaoImplTest extends AbstractTestContainers {
 
     @Test
     void updateCustomer() {
-        Customer customer = getNewCustomer();
-
         underTest.updateCustomer(customer);
 
         verify(customerRepository).save(customer);
@@ -71,7 +65,6 @@ class CustomerDaoImplTest extends AbstractTestContainers {
 
     @Test
     void existsByEmail() {
-        Customer customer = getNewCustomer();
         String email = customer.getEmail();
 
         underTest.existsByEmail(email);
@@ -81,7 +74,6 @@ class CustomerDaoImplTest extends AbstractTestContainers {
 
     @Test
     void existsByPhoneNumber() {
-        Customer customer = getNewCustomer();
         Long phoneNumber = customer.getPhoneNumber();
 
         underTest.existsByPhoneNumber(phoneNumber);
@@ -106,7 +98,6 @@ class CustomerDaoImplTest extends AbstractTestContainers {
 
     @Test
     void deleteCustomer() {
-        Customer customer = getNewCustomer();
 
         underTest.deleteCustomer(customer);
 

@@ -101,4 +101,9 @@ public class CustomerController {
     public ResponseEntity<List<Role>> getRoles() {
         return ResponseEntity.ok(customerService.getRoles());
     }
+
+    @DeleteMapping("/roles/{id}")
+    public void deleteRole(@PathVariable("id") Long id) {
+        customerService.removeRole(id);
+    }
 }

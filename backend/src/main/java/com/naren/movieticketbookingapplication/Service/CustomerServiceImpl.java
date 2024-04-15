@@ -63,6 +63,19 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
+    public Role getRoleById(Long id) {
+        return roleService.findRoleById(id);
+    }
+
+    @Override
+    public void removeRole(Long id) {
+        Role role = getRoleById(id);
+        if (role == null)
+            throw new ResourceNotFoundException("Role cannot be null");
+        roleService.deleteRole(id);
+    }
+
+    @Override
     public ResponseEntity<?> registerUser(CustomerRegistration customerRegistration,
                                           Set<String> roleNames) {
 

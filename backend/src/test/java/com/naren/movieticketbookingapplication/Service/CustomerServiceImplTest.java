@@ -13,7 +13,6 @@ import com.naren.movieticketbookingapplication.Exception.ResourceAlreadyExists;
 import com.naren.movieticketbookingapplication.Exception.ResourceNotFoundException;
 import com.naren.movieticketbookingapplication.Record.CustomerRegistration;
 import com.naren.movieticketbookingapplication.Record.CustomerUpdateRequest;
-import com.naren.movieticketbookingapplication.Repo.RoleRepository;
 import com.naren.movieticketbookingapplication.jwt.JwtUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -46,8 +45,6 @@ class CustomerServiceImplTest {
     @Mock
     private RoleService roleService;
     @Mock
-    private RoleRepository roleRepository;
-    @Mock
     private JwtUtil jwtUtil;
     @Mock
     private MovieDao movieDao;
@@ -58,6 +55,7 @@ class CustomerServiceImplTest {
         underTest = new CustomerServiceImpl(
                 customerDao, passwordEncoder, customerDTOMapper, roleService,
                 movieDao, jwtUtil);
+
     }
 
     @Test
@@ -307,6 +305,21 @@ class CustomerServiceImplTest {
         assertThatThrownBy(() -> underTest.addRole(null)).isInstanceOf(ResourceNotFoundException.class)
                 .hasMessage("Role cannot be null");
         verify(roleService, never()).saveRole(any());
+    }
+
+    @Test
+    void testRemoveRole() {
+        Role role = new Role("USER_ROLE");
+        when(roleService.findRoleById(role.getId())).thenReturn(role);
+        underTest.removeRole(role.getId());
+        verify(roleService).deleteRole(role.getId());
+    }
+
+    @Test
+    void testRemoveRoleThrowsIfRoleIsNull() {
+        assertThatThrownBy(() -> underTest.removeRole(null)).isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage("Role cannot be null");
+        verify(roleService, never()).deleteRole(any());
     }
 
     @Test

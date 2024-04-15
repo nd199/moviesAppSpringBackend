@@ -20,16 +20,20 @@ import static org.mockito.Mockito.*;
 class MovieDaoImplTest {
 
     private MovieDaoImpl underTest;
-
     private AutoCloseable autoCloseable;
-
     @Mock
     private MovieRepository movieRepository;
+
+    private Movie movie;
 
     @BeforeEach
     void setUp() {
         autoCloseable = MockitoAnnotations.openMocks(this);
         underTest = new MovieDaoImpl(movieRepository);
+        movie = new Movie(1L,
+                "Harry Potter",
+                200D,
+                5D);
     }
 
     @AfterEach
@@ -37,17 +41,9 @@ class MovieDaoImplTest {
         autoCloseable.close();
     }
 
-    private Movie getNewMovie() {
-        return new Movie(1L,
-                "Harry Potter",
-                200D,
-                5D);
-    }
 
     @Test
     void addMovie() {
-        Movie movie = getNewMovie();
-
         underTest.addMovie(movie);
 
         verify(movieRepository).save(movie);
@@ -56,7 +52,6 @@ class MovieDaoImplTest {
 
     @Test
     void getMovieById() {
-        Movie movie = getNewMovie();
 
         Long id = movie.getMovie_id();
 
@@ -67,8 +62,6 @@ class MovieDaoImplTest {
 
     @Test
     void updateMovie() {
-        Movie movie = getNewMovie();
-
         underTest.updateMovie(movie);
 
         verify(movieRepository).save(movie);
@@ -76,8 +69,6 @@ class MovieDaoImplTest {
 
     @Test
     void existsByName() {
-        Movie movie = getNewMovie();
-
         underTest.existsByName(movie.getName());
 
         verify(movieRepository).existsByName(movie.getName());
@@ -101,8 +92,6 @@ class MovieDaoImplTest {
 
     @Test
     void removeMovieById() {
-        Movie movie = getNewMovie();
-
         underTest.removeMovie(movie);
 
         verify(movieRepository).delete(movie);

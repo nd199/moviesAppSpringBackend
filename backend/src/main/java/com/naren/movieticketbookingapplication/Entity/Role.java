@@ -10,7 +10,11 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name = "role")
+@Table(name = "role",
+        uniqueConstraints = @UniqueConstraint(
+                name = "name_unique", columnNames = "name"
+        )
+)
 @Getter
 @Setter
 @NoArgsConstructor
@@ -19,9 +23,11 @@ public class Role {
     @ManyToMany(mappedBy = "roles")
     @JsonIgnore
     Set<Customer> customers = new HashSet<Customer>();
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(nullable = false)
     private String name;
 

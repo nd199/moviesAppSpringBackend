@@ -35,6 +35,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                                     @NonNull FilterChain filterChain)
             throws ServletException, IOException {
 
+        log.info("Starting JWT_FILTER on " + request);
+
         final String authHeader = request.getHeader("Authorization");
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
@@ -60,14 +62,9 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 
-                log.info("User '{}' authenticated successfully with JWT", userName);
-            } else {
-                log.warn("JWT token is not valid for user '{}'", userName);
             }
-        } else {
-            log.debug("Authentication skipped for request: {}", request.getRequestURI());
-        }
 
-        filterChain.doFilter(request, response);
+            filterChain.doFilter(request, response);
+        }
     }
 }

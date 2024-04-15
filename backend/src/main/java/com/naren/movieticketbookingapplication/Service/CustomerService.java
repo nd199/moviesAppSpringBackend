@@ -29,4 +29,8 @@ public interface CustomerService {
     void addRole(Role role);
 
     List<Role> getRoles();
+
+    Role getRoleById(Long id);
+
+    void removeRole(Long id);
 }

@@ -5,6 +5,7 @@ import com.github.javafaker.Faker;
 import com.naren.movieticketbookingapplication.Entity.Movie;
 import com.naren.movieticketbookingapplication.Record.MovieRegistration;
 import com.naren.movieticketbookingapplication.Record.MovieUpdation;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -26,15 +27,19 @@ public class MovieIT {
     private static final String API_PATH = "api/v1/movies";
     private static final Faker FAKER = new Faker();
     private static final Random RANDOM = new Random();
+    private MovieRegistration registration;
 
-    @Test
-    void createMovie() {
-
+    @BeforeEach
+    void setup() {
         var movieName = FAKER.name().fullName();
         var rating = Math.floor(RANDOM.nextDouble(2, 5) * 100) / 100;
         var cost = Math.floor(RANDOM.nextDouble(200, 1200) * 100) / 100;
+        registration = new MovieRegistration(movieName, cost, rating);
+    }
 
-        MovieRegistration registration = new MovieRegistration(movieName, cost, rating);
+
+    @Test
+    void createMovie() {
 
         webTestClient.post()
                 .uri(API_PATH)
@@ -75,10 +80,6 @@ public class MovieIT {
 
     @Test
     void deleteMovie() {
-        var movieName = FAKER.name().fullName();
-        var rating = Math.floor(RANDOM.nextDouble(2, 5) * 100) / 100;
-        var cost = Math.floor(RANDOM.nextDouble(200, 1200) * 100) / 100;
-        MovieRegistration registration = new MovieRegistration(movieName, cost, rating);
 
         webTestClient.post()
                 .uri(API_PATH)
@@ -122,11 +123,6 @@ public class MovieIT {
 
     @Test
     void updateMovie() {
-        var movieName = FAKER.name().fullName();
-        var rating = Math.floor(RANDOM.nextDouble(2, 5) * 100) / 100;
-        var cost = Math.floor(RANDOM.nextDouble(200, 1200) * 100) / 100;
-
-        MovieRegistration registration = new MovieRegistration(movieName, cost, rating);
 
         webTestClient.post()
                 .uri(API_PATH)
@@ -155,7 +151,7 @@ public class MovieIT {
 
         String newName = FAKER.funnyName().name();
 
-        MovieUpdation movieUpdation = new MovieUpdation(newName, rating, cost);
+        MovieUpdation movieUpdation = new MovieUpdation(newName, registration.rating(), registration.cost());
 
         webTestClient.put()
                 .uri(API_PATH + "/{id}", id)

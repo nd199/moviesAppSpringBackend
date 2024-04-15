@@ -36,9 +36,10 @@ public class JwtUtil {
         return keyGenerator.generateKey();
     }
 
-    public String issueToken(String subject, String... scopes) {
-        return issueToken(subject, Map.of("scopes", scopes));
-    }
+//
+//    public String issueToken(String subject, String... scopes) {
+//        return issueToken(subject, Map.of("scopes", scopes));
+//    }
 
     public String issueToken(String subject, Map<String, Object> claims) {
         log.debug("Issuing JWT token for subject: {}", subject);

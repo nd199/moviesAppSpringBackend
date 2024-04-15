@@ -20,12 +20,17 @@ CREATE SEQUENCE IF NOT EXISTS movie_id START WITH 1 INCREMENT BY 1;
 
 CREATE TABLE movie
 (
-    movie_id BIGINT           NOT NULL,
-    name     TEXT             NOT NULL,
-    cost     DOUBLE PRECISION NOT NULL,
-    rating   DOUBLE PRECISION NOT NULL,
+    movie_id    BIGINT           NOT NULL,
+    name        TEXT             NOT NULL,
+    cost        DOUBLE PRECISION NOT NULL,
+    rating      DOUBLE PRECISION NOT NULL,
+    customer_id BIGINT,
     CONSTRAINT pk_movie PRIMARY KEY (movie_id)
 );
 
 ALTER TABLE movie
     ADD CONSTRAINT movie_name_unique UNIQUE (name);
+
+ALTER TABLE movie
+    ADD CONSTRAINT FK_CUSTOMER_MOVIE_ID FOREIGN KEY (customer_id) REFERENCES customer (customer_id);
+

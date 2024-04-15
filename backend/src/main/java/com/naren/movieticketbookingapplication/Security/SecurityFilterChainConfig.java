@@ -39,6 +39,7 @@ public class SecurityFilterChainConfig {
                         auth
                                 .requestMatchers(HttpMethod.POST, "/api/v1/roles").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/api/v1/roles").permitAll()
+                                .requestMatchers(HttpMethod.DELETE, "/api/v1/roles/{id}").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/api/v1/customers", "/api/v1/movies", "api/v1/admins").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/api/v1/movies", "api/v1/movies/{id}").permitAll()
                                 .requestMatchers(HttpMethod.PUT, "/api/v1/movies/{id}").permitAll()

@@ -36,7 +36,8 @@ public class Movie {
     private Double rating;
 
     @ManyToOne
-    @JoinColumn(name = "customer_id", foreignKey = @ForeignKey(name = "fk_customer_movie_id"))
+    @JoinColumn(name = "customer_id",
+            foreignKey = @ForeignKey(name = "fk_customer_movie_id"))
     @JsonBackReference
     private Customer customer;
 
